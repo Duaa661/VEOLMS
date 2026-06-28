@@ -25,14 +25,14 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
           <Image
             src={Logo}
             alt="Logo"
-            width={50}
-            height={50}
+            width={30}
+            height={30}
             style={{
-              width: 50,
-              height: 50,
+              width: 30,
+              height: 30,
             }}
           />
-          <span>MarshalLMS</span>
+          <span>VeoLMS</span>
         </Link>
         {children}
         <div className="text-balance text-center text-xs text-muted-foreground">
