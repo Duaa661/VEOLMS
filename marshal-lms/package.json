@@ -9,8 +9,13 @@
     "lint": "eslint"
   },
   "dependencies": {
+    "@ai-sdk/openai": "^4.0.2",
+    "@arcjet/inspect": "^1.5.0",
+    "@arcjet/ip": "^1.5.0",
+    "@arcjet/next": "^1.5.0",
     "@prisma/client": "^6.19.3",
     "@t3-oss/env-nextjs": "^0.13.11",
+    "ai": "^7.0.4",
     "better-auth": "^1.6.21",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
