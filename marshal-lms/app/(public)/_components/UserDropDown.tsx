@@ -20,21 +20,12 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
 import { toast } from "sonner";
+import { useSignOut } from "@/hooks/user-signout";
 
 export function UserDropdown() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
-
-  async function signOut() {
-    await authClient.signOut({
-      fetchOptions: {
-        onSuccess: () => {
-          toast.success("Signed out successfully");
-          router.push("/");
-        },
-      },
-    });
-  }
+   const signout=useSignOut()
 
   if (!session) return null;
 
@@ -89,7 +80,7 @@ export function UserDropdown() {
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/dashboard" className="cursor-pointer">
+          <Link href="/admin" className="cursor-pointer">
             <LayoutDashboard className="mr-2 h-4 w-4" />
             Dashboard
           </Link>
@@ -98,7 +89,7 @@ export function UserDropdown() {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          onClick={signOut}
+          onClick={signout}
           className="cursor-pointer text-red-500 focus:text-red-500"
         >
           <LogOut className="mr-2 h-4 w-4" />
