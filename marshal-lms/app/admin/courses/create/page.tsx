@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import slugify from "slugify";
-
+import { Controller } from "react-hook-form";
 import { ArrowLeft, PlusIcon, Sparkles } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -18,8 +18,9 @@ import {
 } from "@/components/ui/card";
 import { ImagePlus } from "lucide-react";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
+import { RichTextEditor } from "@/components/rich-text-editor/Editor";
 export default function CourseCreationPage() {
-    const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const form = useForm<CourseSchemaType>({
     resolver: zodResolver(courseSchema),
     defaultValues: {
@@ -154,14 +155,18 @@ export default function CourseCreationPage() {
               <label htmlFor="description" className="text-sm font-medium">
                 Course Description
               </label>
-
-              <textarea
+              <Controller
+                control={form.control}
+                name="description"
+                render={({ field }) => <RichTextEditor field={field} />}
+              />
+              {/* <textarea
                 id="description"
                 rows={8}
                 {...form.register("description")}
                 placeholder="Write a detailed description about your course..."
                 className="w-full resize-none rounded-md border px-3 py-2 outline-none transition focus:ring-2 focus:ring-primary"
-              />
+              /> */}
 
               <p className="text-sm text-destructive">
                 {form.formState.errors.description?.message}
@@ -169,64 +174,64 @@ export default function CourseCreationPage() {
             </div>
             {/* Course Thubnail */}
             {/* Course Thumbnail */}
-<div className="space-y-3">
-  <label htmlFor="thumbnail" className="text-sm font-medium">
-    Course Thumbnail
-  </label>
+            <div className="space-y-3">
+              <label htmlFor="thumbnail" className="text-sm font-medium">
+                Course Thumbnail
+              </label>
 
-  <div className="grid grid-cols-1 gap-6 rounded-lg border p-4 md:grid-cols-[220px_1fr]">
-    {/* Preview */}
-    <div className="flex h-52 w-full items-center justify-center overflow-hidden rounded-lg border bg-muted">
-      {thumbnailPreview ? (
-        <img
-          src={thumbnailPreview}
-          alt="Course Thumbnail"
-          className="h-full w-full object-cover"
-        />
-      ) : (
-        <div className="flex flex-col items-center gap-2 text-muted-foreground">
-          <ImagePlus className="h-10 w-10" />
-          <span className="text-sm">Thumbnail Preview</span>
-        </div>
-      )}
-    </div>
+              <div className="grid grid-cols-1 gap-6 rounded-lg border p-4 md:grid-cols-[220px_1fr]">
+                {/* Preview */}
+                <div className="flex h-52 w-full items-center justify-center overflow-hidden rounded-lg border bg-muted">
+                  {thumbnailPreview ? (
+                    <img
+                      src={thumbnailPreview}
+                      alt="Course Thumbnail"
+                      className="h-full w-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center gap-2 text-muted-foreground">
+                      <ImagePlus className="h-10 w-10" />
+                      <span className="text-sm">Thumbnail Preview</span>
+                    </div>
+                  )}
+                </div>
 
-    {/* Upload */}
-    <div className="flex flex-col justify-center space-y-4">
-      <input
-        id="thumbnail"
-        type="file"
-        accept="image/*"
-        onChange={(e) => {
-          const file = e.target.files?.[0];
+                {/* Upload */}
+                <div className="flex flex-col justify-center space-y-4">
+                  <input
+                    id="thumbnail"
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
 
-          if (!file) return;
+                      if (!file) return;
 
-          form.setValue("thumbnail", file, {
-            shouldDirty: true,
-            shouldValidate: true,
-          });
+                      form.setValue("thumbnail", file, {
+                        shouldDirty: true,
+                        shouldValidate: true,
+                      });
 
-          setThumbnailPreview(URL.createObjectURL(file));
-        }}
-        className="block w-full rounded-md border text-sm
+                      setThumbnailPreview(URL.createObjectURL(file));
+                    }}
+                    className="block w-full rounded-md border text-sm
         file:mr-4 file:cursor-pointer file:border-0
         file:bg-primary file:px-4 file:py-2
         file:text-primary-foreground hover:file:opacity-90"
-      />
+                  />
 
-      <div className="space-y-1 text-sm text-muted-foreground">
-        <p>• Upload JPG, PNG or WEBP image.</p>
-        <p>• Recommended size: 1280 × 720 pixels.</p>
-        <p>• Maximum file size: 5 MB.</p>
-      </div>
-    </div>
-  </div>
+                  <div className="space-y-1 text-sm text-muted-foreground">
+                    <p>• Upload JPG, PNG or WEBP image.</p>
+                    <p>• Recommended size: 1280 × 720 pixels.</p>
+                    <p>• Maximum file size: 5 MB.</p>
+                  </div>
+                </div>
+              </div>
 
-  <p className="text-sm text-destructive">
-    {form.formState.errors.thumbnail?.message}
-  </p>
-</div>
+              <p className="text-sm text-destructive">
+                {form.formState.errors.thumbnail?.message}
+              </p>
+            </div>
             {/* Category & Level */}
             <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
               <div className="space-y-2">
@@ -334,7 +339,8 @@ export default function CourseCreationPage() {
             {/* Submit Button */}
             <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Create Course<PlusIcon/>
+                Create Course
+                <PlusIcon className="ml-1" size={16} />
               </Button>
             </div>
           </form>
