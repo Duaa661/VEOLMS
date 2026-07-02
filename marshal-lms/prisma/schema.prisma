@@ -18,11 +18,11 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
-
+  courses       Course[]
   @@unique([email])
   @@map("user")
 }
-
+// create a session model
 model Session {
   id        String   @id
   expiresAt DateTime
@@ -54,7 +54,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
-
+  
   @@index([userId])
   @@map("account")
 }
@@ -69,4 +69,37 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+// create a course model
+model Course{
+id String @id @default (uuid())
+title String
+descrption String
+fileKey String
+price Int
+duration Int
+level CourseLevel @default(Beginner)
+category String
+smallDescrption String
+slug  String @unique
+
+status CourseStatus @default(Draft)
+
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt
+user User   @relation(fields: [userId],references: [id],onDelete: Cascade)
+userId String
+}
+
+enum CourseLevel{
+  Beginner
+  Intermediate
+  Advanced
+}
+
+enum CourseStatus{
+  Draft
+  Published
+  Archived
 }

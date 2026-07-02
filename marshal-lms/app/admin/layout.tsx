@@ -2,18 +2,13 @@ import type { CSSProperties, ReactNode } from "react";
 
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SiteHeader } from "@/components/sidebar/site-header";
-import {
-  SidebarInset,
-  SidebarProvider,
-} from "@/components/ui/sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 type AdminLayoutProps = {
   children: ReactNode;
 };
 
-export default function AdminLayout({
-  children,
-}: AdminLayoutProps) {
+export default function AdminLayout({ children }: AdminLayoutProps) {
   return (
     <SidebarProvider
       style={
@@ -30,7 +25,7 @@ export default function AdminLayout({
 
         <div className="flex flex-1 flex-col">
           <div className="@container/main flex flex-1 flex-col gap-2">
-            <div className="flex flex-col gap-4 py-4 md:gap-6 md:py-6" px-4 ld:px-6>
+            <div className="flex flex-col gap-4 py-4 px-4 lg:px-6 md:gap-6 md:py-6">
               {children}
             </div>
           </div>
