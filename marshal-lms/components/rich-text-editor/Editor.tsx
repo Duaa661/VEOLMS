@@ -14,7 +14,8 @@ export function RichTextEditor({field}:{field:any}) {
               class:
                   'min-h-[300px] p-4 focus:outline-none prose prose-sm sm:prose lg:prose-lg xl:prose-xl dark:prose-invert !w-full !max-w-none'
           }
-      },
+    },
+      immediatelyRender:false,
       onUpdate: ({ editor }) => {
           field.onChange(JSON.stringify(editor.getJSON()))
       },
