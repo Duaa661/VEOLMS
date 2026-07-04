@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import slugify from "slugify";
 import { Controller } from "react-hook-form";
-import { ArrowLeft, PlusIcon, Sparkles } from "lucide-react";
+import { ArrowLeft, FileDiff, PlusIcon, Sparkles } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -20,6 +20,7 @@ import { ImagePlus } from "lucide-react";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
 import { RichTextEditor } from "@/components/rich-text-editor/Editor";
 import { Uploader } from "@/components/file-uploader/uploader";
+
 export default function CourseCreationPage() {
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const form = useForm<CourseSchemaType>({
@@ -37,7 +38,11 @@ export default function CourseCreationPage() {
       smallDescription: "",
     },
   });
-  function onSubmit(values: CourseSchemaType) {}
+
+  
+  function onSubmit(values: CourseSchemaType) {
+    console.log(values)
+   }
   return (
     <>
       <div className="flex items-center gap-4">
@@ -163,14 +168,24 @@ export default function CourseCreationPage() {
                 {form.formState.errors.description?.message}
               </p>
             </div>
-            
+
             {/* Course Thumbnail */}
             <div className="space-y-2">
               <label htmlFor="thumbnail" className="text-sm font-medium">
                 Course Thumbnail
               </label>
 
-              <Uploader />
+              <Controller
+                control={form.control}
+                name="thumbnail"
+                render={({ field }) => (
+                  <Uploader onChange={field.onChange} value={field.value} />
+                )}
+              />
+
+              <p className="text-sm text-destructive">
+                {form.formState.errors.thumbnail?.message}
+              </p>
             </div>
             {/* Category & Level */}
             <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
@@ -182,7 +197,7 @@ export default function CourseCreationPage() {
                 <input
                   id="category"
                   {...form.register("category")}
-                  placeholder="Web Development"
+                  placeholder="ex-Web Development"
                   className="w-full rounded-md border px-3 py-2 outline-none transition focus:ring-2 focus:ring-primary"
                 />
 
@@ -190,7 +205,6 @@ export default function CourseCreationPage() {
                   {form.formState.errors.category?.message}
                 </p>
               </div>
-
               <div className="space-y-2">
                 <label htmlFor="level" className="text-sm font-medium">
                   Course Level
@@ -199,7 +213,23 @@ export default function CourseCreationPage() {
                 <select
                   id="level"
                   {...form.register("level")}
-                  className="w-full rounded-md border px-3 py-2 outline-none transition focus:ring-2 focus:ring-primary"
+                  className="
+      w-full
+      rounded-md
+      border
+      border-input
+      bg-background
+      text-foreground
+      px-3
+      py-2
+      outline-none
+      transition-colors
+      focus:ring-2
+      focus:ring-primary
+      focus:border-primary
+      dark:bg-background
+      dark:text-foreground
+    "
                 >
                   <option value="Beginner">Beginner</option>
                   <option value="Intermediate">Intermediate</option>
@@ -264,7 +294,23 @@ export default function CourseCreationPage() {
               <select
                 id="status"
                 {...form.register("status")}
-                className="w-full rounded-md border px-3 py-2 outline-none transition focus:ring-2 focus:ring-primary"
+                className="
+      w-full
+      rounded-md
+      border
+      border-input
+      bg-background
+      text-foreground
+      px-3
+      py-2
+      transition-colors
+      outline-none
+      focus:border-primary
+      focus:ring-2
+      focus:ring-primary
+      disabled:cursor-not-allowed
+      disabled:opacity-50
+    "
               >
                 <option value="Draft">Draft</option>
                 <option value="Published">Published</option>
@@ -275,7 +321,6 @@ export default function CourseCreationPage() {
                 {form.formState.errors.status?.message}
               </p>
             </div>
-
             {/* Submit Button */}
             <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <Button type="submit" size="lg" className="w-full sm:w-auto">

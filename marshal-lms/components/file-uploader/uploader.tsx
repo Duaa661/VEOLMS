@@ -1,10 +1,9 @@
 "use client";
-
 import Image from "next/image";
 import { useCallback, useEffect, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
+import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
-
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "../ui/card";
 import { RenderEmptyState, RenderErrorState } from "./RenderState";
@@ -16,27 +15,88 @@ interface UploadState {
   uploading: boolean;
   progress: number;
   error: boolean;
+  isDeleting: boolean;
+}
+
+interface isAppProps {
+  value?: string;
+  onChange?: (value: string) => void;
 }
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-export function Uploader() {
-  const [state, setState] = useState<UploadState>({
-    file: null,
-    objectUrl: undefined,
-    key: undefined,
-    uploading: false,
-    progress: 0,
-    error: false,
-  });
+const initialState: UploadState = {
+  file: null,
+  objectUrl: undefined,
+  key: undefined,
+  uploading: false,
+  progress: 0,
+  error: false,
+  isDeleting: false,
+};
+
+export function Uploader({ onChange, value }: isAppProps) {
+  const [state, setState] = useState<UploadState>(initialState);
 
   useEffect(() => {
     return () => {
-      if (state.objectUrl) {
+      if (state.objectUrl && !state.objectUrl.startsWith("http")) {
         URL.revokeObjectURL(state.objectUrl);
       }
     };
   }, [state.objectUrl]);
+
+  const handleRemoveFile = useCallback(
+    async (e: React.MouseEvent<HTMLButtonElement>) => {
+      e.stopPropagation();
+
+      if (state.isDeleting) return;
+
+      try {
+        setState((prev) => ({
+          ...prev,
+          isDeleting: true,
+        }));
+        if (state.key) {
+          const response = await fetch("/api/s3/delete", {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              key: state.key,
+            }),
+          });
+
+          const data = await response.json();
+
+          if (!response.ok || !data.success) {
+            throw new Error(
+              data.message || "Failed to remove file from storage.",
+            );
+          }
+        }
+
+        if (state.objectUrl && !state.objectUrl.startsWith("http")) {
+          URL.revokeObjectURL(state.objectUrl);
+        }
+
+        setState(initialState);
+
+        toast.success("Image deleted successfully.");
+      } catch (error) {
+        toast.error(
+          error instanceof Error ? error.message : "Failed to delete image.",
+        );
+
+        setState((prev) => ({
+          ...prev,
+          isDeleting: false,
+        }));
+      }
+    },
+    [state,onChange],
+  );
 
   const uploadFile = useCallback(async (file: File) => {
     try {
@@ -102,6 +162,7 @@ export function Uploader() {
         key: data.key,
       }));
 
+      onChange?.(data.key);
       toast.success("File uploaded successfully.");
     } catch (error) {
       setState((prev) => ({
@@ -111,7 +172,7 @@ export function Uploader() {
       }));
 
       toast.error(
-        error instanceof Error ? error.message : "File upload failed."
+        error instanceof Error ? error.message : "File upload failed.",
       );
     }
   }, []);
@@ -119,7 +180,12 @@ export function Uploader() {
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
       const file = acceptedFiles[0];
+
       if (!file) return;
+
+      if (state.objectUrl && !state.objectUrl.startsWith("http")) {
+        URL.revokeObjectURL(state.objectUrl);
+      }
 
       const objectUrl = URL.createObjectURL(file);
 
@@ -130,11 +196,12 @@ export function Uploader() {
         uploading: false,
         progress: 0,
         error: false,
+        isDeleting: false,
       });
 
       uploadFile(file);
     },
-    [uploadFile]
+    [uploadFile, state.objectUrl],
   );
 
   const onDropRejected = useCallback((rejections: FileRejection[]) => {
@@ -178,11 +245,26 @@ export function Uploader() {
         "relative h-64 w-full cursor-pointer overflow-hidden border-2 border-dashed transition-colors",
         isDragActive
           ? "border-primary bg-primary/10"
-          : "border-muted-foreground/30 hover:border-primary"
+          : "border-muted-foreground/30 hover:border-primary",
       )}
     >
-      <CardContent className="flex h-full items-center justify-center p-4">
+      <CardContent className="relative flex h-full items-center justify-center p-4">
         <input {...getInputProps()} />
+
+        {(state.objectUrl || state.uploading) && (
+          <button
+            type="button"
+            onClick={handleRemoveFile}
+            disabled={state.isDeleting}
+            className="absolute right-3 top-3 z-20 rounded-full bg-black/70 p-1 text-white transition hover:bg-black disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            {state.isDeleting ? (
+              <Loader2 className="size-4 animate-spin" />
+            ) : (
+              <X className="h-4 w-4" />
+            )}
+          </button>
+        )}
 
         {state.uploading ? (
           <div className="space-y-3 text-center">
@@ -195,9 +277,7 @@ export function Uploader() {
               />
             </div>
 
-            <p className="text-sm text-muted-foreground">
-              {state.progress}%
-            </p>
+            <p className="text-sm text-muted-foreground">{state.progress}%</p>
           </div>
         ) : state.error ? (
           <RenderErrorState />
