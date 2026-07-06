@@ -7,6 +7,7 @@ import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 import { Card, CardContent } from "../ui/card";
 import { RenderEmptyState, RenderErrorState } from "./RenderState";
+import { constructObjectUrl } from "@/hooks/use-construct-url";
 
 interface UploadState {
   file: File | null;
@@ -25,17 +26,18 @@ interface isAppProps {
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 
-const initialState: UploadState = {
+
+export function Uploader({ onChange, value }: isAppProps) {
+  const fileUrl = value ? constructObjectUrl(value) : "";
+  const initialState: UploadState = {
   file: null,
-  objectUrl: undefined,
-  key: undefined,
+  objectUrl: fileUrl,
+  key: value,
   uploading: false,
   progress: 0,
   error: false,
   isDeleting: false,
 };
-
-export function Uploader({ onChange, value }: isAppProps) {
   const [state, setState] = useState<UploadState>(initialState);
 
   useEffect(() => {

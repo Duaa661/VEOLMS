@@ -3,9 +3,33 @@ import { NextResponse } from "next/server";
 
 import { s3 } from "@/lib/s3Client"; // your configured S3 client
 import { env } from "@/lib/env";
+import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
+import { auth } from "@/lib/auth";
+import { headers } from "next/headers";
+import { requireAdmin } from "@/app/data/admin/require-user";
 
+const aj = arcjet.withRule(
+  detectBot({
+    mode: "LIVE",
+    allow:[]
+  })
+).withRule(
+  fixedWindow({
+    mode: "LIVE",
+    window: "1m",
+    max:5
+  })
+)
 export async function DELETE(request: Request) {
+  const session =await requireAdmin()
   try {
+    
+        const decision = await aj.protect(request, {
+          fingerprint: session?.user.id as string
+        })
+        if (decision.isDenied()) {
+          return NextResponse.json({error:"Brother it not Good"},{status:429})
+        }
     const { key } = await request.json();
 
     if (!key || typeof key !== "string") {

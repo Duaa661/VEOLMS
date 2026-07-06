@@ -19,10 +19,16 @@ model User {
   sessions      Session[]
   accounts      Account[]
   courses       Course[]
+  role          String?
+  banned        Boolean?  @default(false)
+  banReason     String?
+  banExpires    DateTime?
+
   @@unique([email])
   @@map("user")
 }
 // create a session model
+
 model Session {
   id        String   @id
   expiresAt DateTime
@@ -33,6 +39,8 @@ model Session {
   userAgent String?
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  impersonatedBy String?
 
   @@unique([token])
   @@index([userId])
@@ -54,7 +62,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
-  
+
   @@index([userId])
   @@map("account")
 }
@@ -72,34 +80,60 @@ model Verification {
 }
 
 // create a course model
-model Course{
-id String @id @default (uuid())
-title String
-descrption String
-fileKey String
-price Int
-duration Int
-level CourseLevel @default(Beginner)
-category String
-smallDescrption String
-slug  String @unique
 
-status CourseStatus @default(Draft)
+model Course {
+  id String @id @default(uuid())
 
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
-user User   @relation(fields: [userId],references: [id],onDelete: Cascade)
-userId String
+  title            String
+  description      String
+  smallDescription String
+
+  fileKey  String
+  price    Int
+  duration Int
+  level    CourseLevel  @default(Beginner)
+  category String
+  slug     String       @unique
+  status   CourseStatus @default(Draft)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
 }
 
-enum CourseLevel{
+enum CourseLevel {
   Beginner
   Intermediate
   Advanced
 }
 
-enum CourseStatus{
+enum CourseStatus {
   Draft
   Published
   Archived
+}
+
+
+model Chapter{
+  id String @id @default (uuid())
+
+  title String
+  postion Int
+
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt
+}
+
+model Lesson{
+  id String @id @default (uuid())
+
+  title String
+  description String?
+  thumbnailKey String?
+  videoUrl   String?
+  
+createdAt DateTime @default(now())
+updatedAt DateTime @updatedAt
 }

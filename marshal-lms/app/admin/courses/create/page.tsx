@@ -1,10 +1,10 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import slugify from "slugify";
 import { Controller } from "react-hook-form";
-import { ArrowLeft, FileDiff, PlusIcon, Sparkles } from "lucide-react";
+import { ArrowLeft, FileDiff, Loader2, PlusIcon, Sparkles } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
@@ -20,9 +20,15 @@ import { ImagePlus } from "lucide-react";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
 import { RichTextEditor } from "@/components/rich-text-editor/Editor";
 import { Uploader } from "@/components/file-uploader/uploader";
+import { tryCatch } from "@/hooks/try-catch";
+import { CreateCourses } from "./action";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 export default function CourseCreationPage() {
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
+  const [Pending, startTransition] = useTransition();
+  const router = useRouter();
   const form = useForm<CourseSchemaType>({
     resolver: zodResolver(courseSchema),
     defaultValues: {
@@ -39,10 +45,26 @@ export default function CourseCreationPage() {
     },
   });
 
-  
   function onSubmit(values: CourseSchemaType) {
-    console.log(values)
-   }
+    startTransition(async () => {
+      const { data: result, error } = await tryCatch(CreateCourses(values));
+
+      if (error) {
+        toast.error("An unexpected error occurred. Please try again.");
+        return;
+      }
+
+      if (!result) return;
+
+      if (result.status === "success") {
+        toast.success(result.message);
+        form.reset();
+        router.push("/admin/courses");
+      } else {
+        toast.error(result.message);
+      }
+    });
+  }
   return (
     <>
       <div className="flex items-center gap-4">
@@ -171,20 +193,20 @@ export default function CourseCreationPage() {
 
             {/* Course Thumbnail */}
             <div className="space-y-2">
-              <label htmlFor="thumbnail" className="text-sm font-medium">
+              <label htmlFor="fileKey" className="text-sm font-medium">
                 Course Thumbnail
               </label>
 
               <Controller
                 control={form.control}
-                name="thumbnail"
+                name="fileKey"
                 render={({ field }) => (
                   <Uploader onChange={field.onChange} value={field.value} />
                 )}
               />
 
               <p className="text-sm text-destructive">
-                {form.formState.errors.thumbnail?.message}
+                {form.formState.errors.fileKey?.message}
               </p>
             </div>
             {/* Category & Level */}
@@ -323,9 +345,22 @@ export default function CourseCreationPage() {
             </div>
             {/* Submit Button */}
             <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-              <Button type="submit" size="lg" className="w-full sm:w-auto">
-                Create Course
-                <PlusIcon className="ml-1" size={16} />
+              <Button
+                type="submit"
+                disabled={Pending}
+                size="lg"
+                className="w-full sm:w-auto"
+              >
+                {Pending ? (
+                  <>
+                    Creating...
+                    <Loader2 className="animate-spin" />
+                  </>
+                ) : (
+                  <>
+                    Create Course <PlusIcon className="ml-1" size={16} />
+                  </>
+                )}
               </Button>
             </div>
           </form>

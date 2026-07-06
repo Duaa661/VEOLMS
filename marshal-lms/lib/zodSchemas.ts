@@ -52,10 +52,9 @@ export const courseSchema = z.object({
     }),
 
   // Match this with your form field
-  thumbnail: z.string().min(1, {
-    message: "Course thumbnail is required",
-  }),
-
+fileKey: z.string().min(1, {
+  message: "Course thumbnail is required",
+}),
   category: z
     .string()
     .trim()
