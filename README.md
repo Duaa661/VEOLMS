@@ -358,23 +358,6 @@ By completing this project, you will learn:
 
 ---
 
-# ⏱ Part 2 Timeline
-
-| Time | Topic |
-|------|-------|
-| 00:00 | Intro |
-| 04:00 | Finishing Drag & Drop |
-| 01:22:00 | Creating & Deleting Lessons / Chapters |
-| 02:33:00 | Course Editing |
-| 04:10:00 | Public Course Pages |
-| 06:00:00 | Stripe Enrollment |
-| 07:05:00 | Stripe Webhooks |
-| 07:40:00 | Analytics Dashboard |
-| 08:40:00 | Student Enrollment Dashboard |
-| 10:25:00 | Progress Tracking |
-| 11:15:00 | Deployment to Vercel |
-
----
 
 # 📚 Resources
 
@@ -426,8 +409,8 @@ This project is licensed under the MIT License.
 **Dushyant Rajput**
 
 - GitHub: https://github.com/Duaa661
-- Portfolio: Your Portfolio
-- LinkedIn: Your LinkedIn
+- Portfolio: https://dushyant-chauhan-protfolio.netlify.app/
+- LinkedIn: https://www.linkedin.com/in/dushyant-chauhan-9ab359245/
 
 ---
 
