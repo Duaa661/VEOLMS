@@ -1,4 +1,4 @@
-# 🎓 VeoLMS - Full Stack Learning Management System (Part 2)
+# 🎓 VeoLMS - Full Stack Learning Management System 
 
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
