@@ -1,75 +1,40 @@
-# 🎓 VeoLMS – Full Stack Learning Management System
+# 🎓 VeoLMS - Full Stack Learning Management System (Part 2)
 
-> A production-ready Learning Management System (LMS) built with **Next.js 15**, **TypeScript**, **Prisma**, **Neon PostgreSQL**, **Better Auth**, **Stripe**, **Arcjet**, **AWS S3/Tigris**, and **Tailwind CSS**.
-
-![Next.js](https://img.shields.io/badge/Next.js-15-black?logo=next.js)
-![TypeScript](https://img.shields.io/badge/TypeScript-5-blue?logo=typescript)
-![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748?logo=prisma)
-![Postgres](https://img.shields.io/badge/Database-Neon_Postgres-00E599)
-![Stripe](https://img.shields.io/badge/Stripe-Payments-635BFF?logo=stripe)
-![License](https://img.shields.io/badge/License-MIT-green)
+![License](https://img.shields.io/badge/license-MIT-blue)
+![Next.js](https://img.shields.io/badge/Next.js-15-black)
+![TypeScript](https://img.shields.io/badge/TypeScript-5-blue)
+![Prisma](https://img.shields.io/badge/Prisma-ORM-2D3748)
+![Stripe](https://img.shields.io/badge/Stripe-Payments-635BFF)
+![Vercel](https://img.shields.io/badge/Deploy-Vercel-black)
 
 ---
 
-## 📖 About
+# 📖 About
+- ✅ Drag & Drop Course Structure
+- ✅ Course Editing
+- ✅ Public Course Pages
+- ✅ Stripe Payments
+- ✅ Enrollment System
+- ✅ Student Dashboard
+- ✅ Progress Tracking
+- ✅ Analytics Dashboard
+- ✅ Deployment to Vercel
 
-VeoLMS is a complete **Learning Management System** that enables instructors to create and manage online courses while allowing students to purchase courses, watch lessons, and track their learning progress.
-
-This project was built from scratch in **two parts (24+ hours)** and demonstrates how to build a scalable, production-ready LMS using the latest web technologies.
-
-### 🎬 Part 1
-
-The first part focuses on building the application's foundation.
-
-It covers:
-
-- Project setup
-- Authentication
-- Database integration
-- Landing page
-- Admin dashboard
-- Course creation
-- Rich text editor
-- File uploads
-- AWS S3 integration
-- Mutation layer
-- Protected routes
-- Course structure
-- Drag & Drop
-
----
-
-### 🎬 Part 2
-
-The second part completes the LMS by implementing advanced features.
-
-It covers:
-
-- Completing Drag & Drop
-- Course editing
-- Public course pages
-- Stripe payments
-- Student enrollment
-- Stripe webhooks
-- Analytics dashboard
-- Student dashboard
-- Progress tracking
-- Deployment to Vercel
+Combined with **Part 1**, this project contains **24+ hours** of full-stack development covering everything required to build a production-ready LMS.
 
 ---
 
 # ✨ Features
 
-## 🌐 Modern Frontend
+## 🎨 Frontend
 
-- Next.js 15 App Router
-- React 19
+- Next.js 15 (App Router)
 - TypeScript
 - Tailwind CSS
 - Shadcn UI
-- Fully Responsive
-- Dark Mode
-- Optimized Performance
+- Responsive Design
+- Beautiful Animations
+- Dark Mode Support
 
 ---
 
@@ -83,29 +48,39 @@ It covers:
 
 ---
 
+## 🛡 Security
+
+- Arcjet Protection
+- Rate Limiting
+- Bot Detection
+- XSS Protection
+- SQL Injection Protection
+- Secure API Routes
+
+---
+
 ## 👨‍💼 Admin Dashboard
 
-- Dashboard Overview
 - Create Courses
 - Edit Courses
 - Delete Courses
-- Publish Courses
+- Publish / Unpublish Courses
 - Manage Chapters
 - Manage Lessons
-- Rich Text Editor
 - Upload Course Videos
 - Upload Attachments
-- Drag & Drop Course Builder
+- Drag & Drop Course Structure
+- Analytics Dashboard
 
 ---
 
 ## 👨‍🎓 Student Dashboard
 
 - Purchased Courses
+- Watch Videos
+- Track Progress
+- Mark Lessons Complete
 - Continue Learning
-- Watch Lessons
-- Progress Tracking
-- Lesson Completion
 - Enrollment History
 
 ---
@@ -122,62 +97,346 @@ It covers:
 
 ## 📈 Analytics
 
-- Revenue Overview
-- Student Statistics
+- Total Revenue
+- Student Count
 - Course Sales
-- Enrollment Analytics
-- Completion Rate
+- Enrollment Statistics
+- Progress Analytics
 
 ---
 
-## 📂 File Management
+## 📂 File Uploads
 
-- AWS S3 Uploads
-- Tigris Storage
 - Presigned URLs
-- File Deletion
+- AWS S3
+- Tigris Storage
 - Secure Uploads
-
----
-
-## 🔒 Security
-
-- Arcjet Protection
-- Rate Limiting
-- SQL Injection Protection
-- XSS Protection
-- Bot Detection
-- Secure Server Actions
+- File Deletion
 
 ---
 
 ## 🚀 Deployment
 
-- Vercel Deployment
-- Production Environment
+- Vercel
+- Environment Variables
+- Production Build
 - Middleware Protection
+
+---
+
+# 🖼 Screenshots
+
+Create a folder named **screenshots** inside your project.
+
+```
+screenshots/
+│
+├── landing-page.png
+├── login.png
+├── admin-dashboard.png
+├── create-course.png
+├── edit-course.png
+├── drag-drop.png
+├── analytics.png
+├── checkout.png
+├── student-dashboard.png
+├── course-player.png
+├── progress-tracking.png
+└── deployment.png
+```
+
+## Landing Page
+
+![Landing](./screenshots/landing-page.png)
+
+---
+
+## Login
+
+![Login](./screenshots/login.png)
+
+---
+
+## Admin Dashboard
+
+![Admin Dashboard](./screenshots/admin-dashboard.png)
+
+---
+
+## Create Course
+
+![Create Course](./screenshots/create-course.png)
+
+---
+
+## Edit Course
+
+![Edit Course](./screenshots/edit-course.png)
+
+---
+
+## Drag & Drop Builder
+
+![DnD](./screenshots/drag-drop.png)
+
+---
+
+## Analytics
+
+![Analytics](./screenshots/analytics.png)
+
+---
+
+## Stripe Checkout
+
+![Stripe](./screenshots/checkout.png)
+
+---
+
+## Student Dashboard
+
+![Dashboard](./screenshots/student-dashboard.png)
+
+---
+
+## Course Player
+
+![Course Player](./screenshots/course-player.png)
+
+---
+
+## Progress Tracking
+
+![Progress](./screenshots/progress-tracking.png)
 
 ---
 
 # 🛠 Tech Stack
 
 | Category | Technology |
-|-----------|------------|
+|------------|------------|
 | Framework | Next.js 15 |
 | Language | TypeScript |
 | Styling | Tailwind CSS |
-| Components | Shadcn UI |
-| Authentication | Better Auth |
-| Database | Neon PostgreSQL |
+| UI | Shadcn UI |
 | ORM | Prisma |
-| Validation | Zod |
+| Database | Neon PostgreSQL |
+| Authentication | Better Auth |
 | Payments | Stripe |
-| Storage | AWS S3 / Tigris |
 | Security | Arcjet |
+| Validation | Zod |
+| Storage | AWS S3 / Tigris |
 | Deployment | Vercel |
 
 ---
 
-# 📸 Screenshots
+# 📂 Folder Structure
 
-Create a folder named **screenshots** inside your project.
+```
+app/
+components/
+actions/
+hooks/
+lib/
+prisma/
+public/
+screenshots/
+types/
+README.md
+```
+
+---
+
+# ⚙ Installation
+
+## Clone Repository
+
+```bash
+git clone https://github.com/yourusername/veolms.git
+
+cd veolms
+```
+
+---
+
+## Install Dependencies
+
+```bash
+pnpm install
+```
+
+---
+
+## Install Shadcn UI
+
+```bash
+pnpm dlx shadcn@latest add alert-dialog avatar badge breadcrumb button card chart checkbox collapsible dialog drawer dropdown-menu form input-otp input label progress select separator sheet sidebar skeleton sonner table tabs textarea toggle-group toggle tooltip
+```
+
+---
+
+## Environment Variables
+
+Create a `.env` file.
+
+```env
+DATABASE_URL=
+
+BETTER_AUTH_SECRET=
+BETTER_AUTH_URL=
+
+GITHUB_CLIENT_ID=
+GITHUB_CLIENT_SECRET=
+
+RESEND_API_KEY=
+
+ARCJET_KEY=
+
+STRIPE_SECRET_KEY=
+STRIPE_WEBHOOK_SECRET=
+
+AWS_ACCESS_KEY_ID=
+AWS_SECRET_ACCESS_KEY=
+AWS_BUCKET_NAME=
+AWS_REGION=
+
+NEXT_PUBLIC_APP_URL=
+```
+
+---
+
+## Generate Prisma Client
+
+```bash
+pnpm prisma generate
+```
+
+---
+
+## Push Database
+
+```bash
+pnpm prisma db push
+```
+
+---
+
+## Run Development Server
+
+```bash
+pnpm dev
+```
+
+Visit:
+
+```
+http://localhost:3000
+```
+
+---
+
+# 📚 Learning Outcomes
+
+By completing this project, you will learn:
+
+- Authentication with Better Auth
+- Email OTP Login
+- OAuth Authentication
+- Server Actions
+- Prisma ORM
+- PostgreSQL
+- Stripe Integration
+- Stripe Webhooks
+- AWS S3 Uploads
+- Drag & Drop using DnD Kit
+- Rich Text Editors
+- Analytics Dashboard
+- Student Progress Tracking
+- Middleware Protection
+- Secure API Development
+- Production Deployment
+
+---
+
+# ⏱ Part 2 Timeline
+
+| Time | Topic |
+|------|-------|
+| 00:00 | Intro |
+| 04:00 | Finishing Drag & Drop |
+| 01:22:00 | Creating & Deleting Lessons / Chapters |
+| 02:33:00 | Course Editing |
+| 04:10:00 | Public Course Pages |
+| 06:00:00 | Stripe Enrollment |
+| 07:05:00 | Stripe Webhooks |
+| 07:40:00 | Analytics Dashboard |
+| 08:40:00 | Student Enrollment Dashboard |
+| 10:25:00 | Progress Tracking |
+| 11:15:00 | Deployment to Vercel |
+
+---
+
+# 📚 Resources
+
+- Next.js
+- Tailwind CSS
+- Shadcn UI
+- Prisma
+- Neon Database
+- Better Auth
+- Arcjet
+- Stripe
+- Tigris Storage
+- Zod
+- Vercel
+
+---
+
+# 🚀 Deployment
+
+Deploy the application using **Vercel**.
+
+1. Push code to GitHub
+2. Import repository into Vercel
+3. Configure environment variables
+4. Deploy
+
+---
+
+# 🤝 Contributing
+
+Contributions are welcome!
+
+1. Fork the project
+2. Create your feature branch
+3. Commit your changes
+4. Push your branch
+5. Open a Pull Request
+
+---
+
+# 📄 License
+
+This project is licensed under the MIT License.
+
+---
+
+# 👨‍💻 Author
+
+**Dushyant Rajput**
+
+- GitHub: https://github.com/Duaa661
+- Portfolio: Your Portfolio
+- LinkedIn: Your LinkedIn
+
+---
+
+## ⭐ Support
+
+If you found this project helpful, consider giving it a ⭐ on GitHub.
+
+It helps others discover the project and motivates future improvements.
+
+---
+
+**Built with ❤️ using Next.js 15, Prisma, Neon PostgreSQL, Better Auth, Stripe, Arcjet, Tailwind CSS, and Shadcn UI.**
