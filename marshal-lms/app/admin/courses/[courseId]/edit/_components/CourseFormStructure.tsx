@@ -41,6 +41,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
+import { reorderforLessons } from "../action";
 
 interface SortableItemProps {
   id: string;
@@ -103,7 +104,7 @@ export default function CourseFormStructure({
     })) ?? [];
   console.log("Intial Item ", initialItems);
   const [items, setItems] = useState(initialItems);
-
+   console.log(items)
   function toggleChapter(chapterId: string) {
     setItems(
       items.map((chapter) =>
@@ -176,17 +177,70 @@ function handleDragEnd(event: DragEndEvent) {
     const previousItems = items;
 
     setItems(updatedChaptersForState);
-
-    // TODO:
-    // await reorderChapters({
-    //   courseId,
-    //   chapters: updatedChaptersForState,
-    // });
-
     return;
   }
+ 
+  if (activeType === "lesson" && overType === "lesson") {
+    const chapterId = active.data.current?.chapterId;
+    const overChapterId = over.data.current?.chapterId;
+    if (!chapterId || chapterId !== overChapterId) {
+      toast.error(
+        "Lesson move between different chapters or inavlid chapter 10 is not allowed"
+      )
+      return;
+    }
+    const chapterIndex = items.findIndex((chapter) => chapter.id === chapterId)
+    if(chapterIndex===-1){
+      toast.error("Could not find chapter for lesson")
+      return;
+    }
 
-  // Handle lesson drag here...
+    const chapterToUpdate = items[chapterIndex]
+    const oldLessonIndex = chapterToUpdate.lessons.findIndex(
+      (lesson) => lesson.id === activeId)
+    const newLessonIndex = chapterToUpdate.lessons.findIndex(
+      (lesson) => lesson.id === overId)
+    if (oldLessonIndex === -1) {
+      toast.error("Could not find lesson for reordering");
+      return;
+    }
+    const recordLessons = arrayMove(
+      chapterToUpdate.lessons,
+      oldLessonIndex,
+      newLessonIndex
+    )
+
+    const updatedLessonForState = recordLessons.map((lesson, index) => ({
+      ...lesson,
+      order:index+1,
+    }))
+    const newitems = [...items]
+    newitems[chapterIndex] = {
+      ...chapterToUpdate,
+      lessons:updatedLessonForState
+    }
+    const prevItems = [...items]
+    setItems(newitems)
+    if (courseId) {
+      const lessonToUpdate = updatedLessonForState.map((lesson) => ({
+        id: lesson.id,
+        position:lesson.order
+      }))
+
+      const reorderLessonsPromise = () => reorderforLessons(chapterId, lessonToUpdate, courseId)
+      toast.promise(reorderLessonsPromise(), {
+        loading: 'Reordering Lessons',
+        success: (result) => {
+          if (result.status === 'success') return result.message;
+          throw new Error(result.message)
+        },
+        error: () => {
+          setItems(prevItems)
+          return 'Failed to reorder lessons'
+        }
+      })
+    }
+  }
 }
   return (
     <DndContext
@@ -199,7 +253,7 @@ function handleDragEnd(event: DragEndEvent) {
           <CardTitle>Chapters</CardTitle>
         </CardHeader>
 
-        <CardContent className="space-y-3 pt-6">
+        <CardContent className="space-y-8 pt-6">
           <SortableContext
             items={items.map((item) => item.id)}
             strategy={verticalListSortingStrategy}
