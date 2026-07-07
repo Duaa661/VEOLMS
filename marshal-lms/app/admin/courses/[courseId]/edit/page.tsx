@@ -32,31 +32,33 @@ export default async function EditRoute({
   const { courseId } = await params;
 
   const data = await AdminGetCourses(courseId);
-
   if (!data) {
     notFound();
   }
 
   return (
-    <div className="space-y-8">
-      <div>
-        <h1 className="text-3xl font-bold">
+    <div className="mx-auto w-full max-w-7xl space-y-6">
+      {/* Page Header */}
+      <div className="space-y-2">
+        <h1 className="text-3xl font-bold tracking-tight">
           Edit Course{" "}
-          <span className="text-primary underline">
+          <span className="text-primary underline underline-offset-4">
             {data.title}
           </span>
         </h1>
 
-        <p className="mt-2 text-muted-foreground">
-          Update your course information and structure.
+        <p className="text-muted-foreground">
+          Update your course information, pricing, thumbnail,
+          and course structure.
         </p>
       </div>
 
+      {/* Tabs */}
       <Tabs
         defaultValue="basic-info"
         className="w-full"
       >
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid h-auto w-full grid-cols-2">
           <TabsTrigger value="basic-info">
             Basic Information
           </TabsTrigger>
@@ -66,15 +68,21 @@ export default async function EditRoute({
           </TabsTrigger>
         </TabsList>
 
-        {/* Basic Information */}
-        <TabsContent value="basic-info">
+        {/* ---------------- Basic Information ---------------- */}
+        <TabsContent
+          value="basic-info"
+          className="mt-6"
+        >
           <Card>
             <CardHeader>
-              <CardTitle>Basic Information</CardTitle>
+              <CardTitle>
+                Basic Information
+              </CardTitle>
 
               <CardDescription>
-                Update the title, description, thumbnail,
-                category, pricing, and other course details.
+                Update the course title, description,
+                thumbnail, category, pricing, level, status,
+                and other settings.
               </CardDescription>
             </CardHeader>
 
@@ -84,20 +92,25 @@ export default async function EditRoute({
           </Card>
         </TabsContent>
 
-        {/* Course Structure */}
-        <TabsContent value="course-structure">
+        {/* ---------------- Course Structure ---------------- */}
+        <TabsContent
+          value="course-structure"
+          className="mt-6"
+        >
           <Card>
             <CardHeader>
-              <CardTitle>Course Structure</CardTitle>
+              <CardTitle>
+                Course Structure
+              </CardTitle>
 
               <CardDescription>
-                Manage chapters, lessons, videos, and
-                downloadable resources.
+                Organize chapters, lessons, videos, quizzes,
+                and downloadable resources using drag-and-drop.
               </CardDescription>
             </CardHeader>
 
             <CardContent>
-              <CourseFormStructure />
+              <CourseFormStructure data={data} />
             </CardContent>
           </Card>
         </TabsContent>

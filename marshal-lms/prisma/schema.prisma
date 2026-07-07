@@ -101,6 +101,8 @@ model Course {
 
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId String
+
+  chapter Chapter[]
 }
 
 enum CourseLevel {
@@ -120,10 +122,13 @@ model Chapter{
   id String @id @default (uuid())
 
   title String
-  postion Int
+  position Int
 
 createdAt DateTime @default(now())
 updatedAt DateTime @updatedAt
+Course Course @relation(fields: [courseId], references: [id])
+courseId String
+lessons Lesson[]
 }
 
 model Lesson{
@@ -133,7 +138,9 @@ model Lesson{
   description String?
   thumbnailKey String?
   videoUrl   String?
-  
+  position Int
 createdAt DateTime @default(now())
 updatedAt DateTime @updatedAt
+Chapter Chapter @relation(fields: [chapterId], references: [id])
+chapterId String
 }
