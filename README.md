@@ -124,6 +124,14 @@ Combined with **Part 1**, this project contains **24+ hours** of full-stack deve
 
 ---
 
+
+# 🖼 FlowChart
+## flowchart
+
+![flowchart](./screenshots/flowchart.png)
+
+
+
 # 🖼 Screenshots
 
 Create a folder named **screenshots** inside your project.
