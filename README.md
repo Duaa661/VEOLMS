@@ -20,7 +20,6 @@
 - ✅ Analytics Dashboard
 - ✅ Deployment to Vercel
 
-Combined with **Part 1**, this project contains **24+ hours** of full-stack development covering everything required to build a production-ready LMS.
 
 ---
 
