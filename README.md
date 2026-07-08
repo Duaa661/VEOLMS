@@ -1,4 +1,4 @@
-# 🎓 VeoLMS - Full Stack Learning Management System 
+# VeoLMS - Full Stack Learning Management System 
 
 ![License](https://img.shields.io/badge/license-MIT-blue)
 ![Next.js](https://img.shields.io/badge/Next.js-15-black)
@@ -9,7 +9,7 @@
 
 ---
 
-# 📖 About
+# About
 - ✅ Drag & Drop Course Structure
 - ✅ Course Editing
 - ✅ Public Course Pages
@@ -23,9 +23,9 @@
 
 ---
 
-# ✨ Features
+# Features
 
-## 🎨 Frontend
+##  Frontend
 
 - Next.js 15 (App Router)
 - TypeScript
@@ -37,7 +37,7 @@
 
 ---
 
-## 🔐 Authentication
+## Authentication
 
 - Better Auth
 - Email OTP Login
@@ -47,7 +47,7 @@
 
 ---
 
-## 🛡 Security
+## Security
 
 - Arcjet Protection
 - Rate Limiting
@@ -58,7 +58,7 @@
 
 ---
 
-## 👨‍💼 Admin Dashboard
+## Admin Dashboard
 
 - Create Courses
 - Edit Courses
@@ -73,7 +73,7 @@
 
 ---
 
-## 👨‍🎓 Student Dashboard
+## Student Dashboard
 
 - Purchased Courses
 - Watch Videos
@@ -84,7 +84,7 @@
 
 ---
 
-## 💳 Stripe Integration
+## Stripe Integration
 
 - Secure Checkout
 - Course Purchase
@@ -94,7 +94,7 @@
 
 ---
 
-## 📈 Analytics
+##  Analytics
 
 - Total Revenue
 - Student Count
@@ -104,7 +104,7 @@
 
 ---
 
-## 📂 File Uploads
+##  File Uploads
 
 - Presigned URLs
 - AWS S3
@@ -114,7 +114,7 @@
 
 ---
 
-## 🚀 Deployment
+##  Deployment
 
 - Vercel
 - Environment Variables
@@ -124,7 +124,7 @@
 ---
 
 
-# 🖼 FlowChart
+#  FlowChart
 ## flowchart
 
 ![flowchart](./screenshots/flowchart.png)
@@ -144,6 +144,8 @@ screenshots/
 ├── create-course.png
 ├── edit-course.png
 ├── drag-drop.png
+├── new-chapter.png
+├── new-Lesson.png
 ├── analytics.png
 ├── checkout.png
 ├── student-dashboard.png
@@ -187,6 +189,18 @@ screenshots/
 ![DnD](./screenshots/drag-drop.png)
 
 ---
+
+
+## New Chapter
+
+![DnD](./screenshots/new-chapter.png)
+
+
+
+## New Lesson
+
+![DnD](./screenshots/new-lesson.png)
+
 
 ## Analytics
 
