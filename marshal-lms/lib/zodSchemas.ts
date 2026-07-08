@@ -90,4 +90,48 @@ fileKey: z.string().min(1, {
   }),
 });
 
+export const chapterSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(3, {
+      message: "Name must be at least 3 characters long",
+    }),
+
+  courseId: z
+    .string()
+    .uuid({
+      message: "Course ID is required",
+    }),
+});
+
+export const lessonSchema = z.object({
+  name: z
+    .string()
+    .trim()
+    .min(3, {
+      message: "Name must be at least 3 characters long",
+    }),
+
+  courseId: z
+    .string()
+    .uuid({
+      message: "Course ID is required",
+    }),
+  chapterId: z
+    .string()
+    .uuid({
+      message: "Chapter ID is required",
+    }),
+  description:
+    z.string().min(3, { message: "Description must be at least 3 character long" }).optional(),
+  thumbnailKey:
+    z.string().optional(),
+  videoUrl:
+  z.string().optional()
+  
+});
 export type CourseSchemaType = z.infer<typeof courseSchema>;
+
+export type ChapterSchemaType = z.infer<typeof chapterSchema>;
+export type LessonSchemaType = z.infer<typeof lessonSchema>;

@@ -42,6 +42,8 @@ import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
 import { reorderChapter, reorderforLessons } from "../action";
+import NewChapterModel from "./NewChapter";
+import NewLessonModal from "./NewLesson";
 
 interface SortableItemProps {
   id: string;
@@ -89,7 +91,6 @@ interface CourseFormStructureProps {
 export default function CourseFormStructure({
   data,
 }: CourseFormStructureProps) {
-  console.log("Admin data", data);
   const initialItems =
     data.chapter.map((chapter) => ({
       id: chapter.id,
@@ -104,22 +105,24 @@ export default function CourseFormStructure({
     })) ?? [];
   console.log("Intial Item ", initialItems);
   const [items, setItems] = useState(initialItems);
-  useEffect(() => {
-   setItems((prevItems)=>{
-  const updatedItems = data.chapter.map((chapter) => ({
-    id: chapter.id,
-    title: chapter.title,
-    order: chapter.position,
-    isOpen: prevItems.find((item)=>itme.id === chapter.id)?.isOpen??true,
-    lessons: chapter.lessons.map((lesson) => ({
-      id: lesson.id,
-      title: lesson.title,
-      order: lesson.position,
-    })),
-  }));
-     return updatedItems;
-   });
-    },[data])
+ useEffect(() => {
+  setItems((prevItems) => {
+    const updatedItems = data.chapter.map((chapter) => ({
+      id: chapter.id,
+      title: chapter.title,
+      order: chapter.position,
+      isOpen:
+        prevItems.find((item) => item.id === chapter.id)?.isOpen ?? true,
+      lessons: chapter.lessons.map((lesson) => ({
+        id: lesson.id,
+        title: lesson.title,
+        order: lesson.position,
+      })),
+    }));
+
+    return updatedItems;
+  });
+}, [data]);
   function toggleChapter(chapterId: string) {
     setItems(
       items.map((chapter) =>
@@ -285,8 +288,9 @@ function handleDragEnd(event: DragEndEvent) {
       onDragEnd={handleDragEnd}
     >
       <Card>
-        <CardHeader className="border-b">
+        <CardHeader className="border-b flex flex-row items-center justify-between border-border">
           <CardTitle>Chapters</CardTitle>
+          <NewChapterModel courseId={data.id} />
         </CardHeader>
 
         <CardContent className="space-y-8 pt-6">
@@ -376,9 +380,7 @@ function handleDragEnd(event: DragEndEvent) {
                             ))}
                           </SortableContext>
                           <div className="p-2">
-                            <Button
-                              className="w-full"
-                              variant="outline">Create New Lesson</Button>
+                            <NewLessonModal chapterId={item.id} courseId={data.id} />
                           </div>
                         </div>
                       </CollapsibleContent>

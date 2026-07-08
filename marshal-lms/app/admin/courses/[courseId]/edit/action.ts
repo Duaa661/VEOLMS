@@ -3,7 +3,7 @@
 import { requireAdmin } from "@/app/data/admin/require-user"
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/type";
-import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
+import { chapterSchema, ChapterSchemaType, courseSchema, CourseSchemaType, lessonSchema } from "@/lib/zodSchemas";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { number, string } from "zod";
@@ -70,6 +70,7 @@ export async function editCourse(data:CourseSchemaType,courseId:string): Promise
         }
     }
 }
+// reoder lesson with spacific postion
 export async function reorderforLessons(
   chapterId: string,
   lessons: { id: string; position: number }[],
@@ -111,7 +112,7 @@ export async function reorderforLessons(
     };
   }
 }
-
+// reoder chapter with spacific postion
 export async function reorderChapter(
   courseId: string,
   chapters: { id: string; position:number}[]
@@ -149,5 +150,104 @@ export async function reorderChapter(
       status: 'error',
       message: "Failed to reoder chapters"
     }
+  }
+}
+
+// Create a new Chapter function
+export async function createChapter(values:ChapterSchemaType): Promise<ApiResponse>{
+  try {
+    await requireAdmin()
+    const result = chapterSchema.safeParse(values)
+    if (!result.success) {
+      return {
+        status: "error",
+        message: "Invalid Data"
+      }
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const maxpos = await tx.chapter.findFirst({
+        where: {
+          courseId:result.data.courseId
+        },
+        select: {
+          position:true
+        },
+        orderBy: {
+          position:"desc"
+        }
+      })
+
+      await tx.chapter.create({
+        data: {
+          title: result.data.name,
+          courseId: result.data.courseId,
+          position:(maxpos?.position ?? 1)+1
+        }
+      })
+    })
+    revalidatePath(`/admin/courses/${result.data.courseId}/edit`)
+
+    return {
+      status: 'success',
+      message:"Chapter Created Sucessfully"
+    }
+  } catch (error) {
+    return {
+      status: 'error',
+      message:"Failed to create Chapter"
+    }
+      
+  }
+}
+
+// Create a new Lesson
+export async function createLesson(values:ChapterSchemaType): Promise<ApiResponse>{
+  try {
+    await requireAdmin()
+    const result = lessonSchema.safeParse(values)
+    if (!result.success) {
+      return {
+        status: "error",
+        message: "Invalid Data"
+      }
+    }
+
+    await prisma.$transaction(async (tx) => {
+      const maxpos = await tx.lesson.findFirst({
+        where: {
+          chapterId:result.data.chapterId
+        },
+        select: {
+          position:true
+        },
+        orderBy: {
+          position:"desc"
+        }
+      })
+
+      await tx.lesson.create({
+        data: {
+          title: result.data.name,
+          description: result.data.description,
+          videoKey: result.data.videoUrl,
+          thumbnailKey: result.data.thumbnailKey,
+          chapterId:result.data.chapterId,
+          position:(maxpos?.position ?? 0)+1
+        }
+      })
+    })
+    revalidatePath(`/admin/courses/${result.data.courseId}/edit`)
+
+    return {
+      status: 'success',
+      message:"Lesson Created Sucessfully"
+    }
+  } catch (error) {
+    return {
+      status: 'error',
+      message:"Failed to create Chapter"
+    }
+      
   }
 }

@@ -42,7 +42,6 @@ export default function EditCourseForm({ data }: EditCourseFormProps) {
       price: data.price,
     },
   });
-  console.log(data.description);
   const onSubmit = (values: CourseSchemaType) => {
     startTransition(async () => {
       const { data: result, error } = await tryCatch(
