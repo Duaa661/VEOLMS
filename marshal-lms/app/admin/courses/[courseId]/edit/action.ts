@@ -75,6 +75,7 @@ export async function reorderforLessons(
   lessons: { id: string; position: number }[],
   courseId: string
 ): Promise<ApiResponse> {
+   await requireAdmin()
   try {
     if (!lessons.length) {
       return {
@@ -82,23 +83,6 @@ export async function reorderforLessons(
         message: "No lessons provided for reordering",
       };
     }
-
-    // // Optional: Verify the chapter exists
-    // const chapter = await prisma.chapter.findUnique({
-    //   where: {
-    //     id: chapterId,
-    //   },
-    //   select: {
-    //     id: true,
-    //   },
-    // });
-
-    // if (!chapter) {
-    //   return {
-    //     status: "error",
-    //     message: "Chapter not found",
-    //   };
-    // }
     const updates = lessons.map((lesson) =>
       prisma.lesson.update({
         where: {
@@ -125,5 +109,45 @@ export async function reorderforLessons(
       status: "error",
       message: "Failed to reorder lessons",
     };
+  }
+}
+
+export async function reorderChapter(
+  courseId: string,
+  chapters: { id: string; position:number}[]
+): Promise<ApiResponse>{
+  await requireAdmin()
+  try {
+    if (!chapters || chapters.length === 0) {
+      return {
+        status: 'error',
+        message:'No chapters provided for reordering'
+      }
+    }
+    const updates = chapters.map((chapter) =>
+      prisma.chapter.update({
+        where: {
+          id: chapter.id,
+          courseId:courseId,
+        },
+        data: {
+          position: chapter.position,
+        },
+      })
+    );
+   await prisma.$transaction(updates);
+
+    revalidatePath(`/admin/courses/${courseId}/edit`);
+
+    return {
+      status: "success",
+      message: "Chapter reordered successfully",
+    };
+   
+  } catch (error) {
+    return {
+      status: 'error',
+      message: "Failed to reoder chapters"
+    }
   }
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { ReactNode, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import {
   DndContext,
   PointerSensor,
@@ -41,7 +41,7 @@ import {
 import { Button } from "@/components/ui/button";
 import Link from "next/link";
 import { toast } from "sonner";
-import { reorderforLessons } from "../action";
+import { reorderChapter, reorderforLessons } from "../action";
 
 interface SortableItemProps {
   id: string;
@@ -104,7 +104,22 @@ export default function CourseFormStructure({
     })) ?? [];
   console.log("Intial Item ", initialItems);
   const [items, setItems] = useState(initialItems);
-   console.log(items)
+  useEffect(() => {
+   setItems((prevItems)=>{
+  const updatedItems = data.chapter.map((chapter) => ({
+    id: chapter.id,
+    title: chapter.title,
+    order: chapter.position,
+    isOpen: prevItems.find((item)=>itme.id === chapter.id)?.isOpen??true,
+    lessons: chapter.lessons.map((lesson) => ({
+      id: lesson.id,
+      title: lesson.title,
+      order: lesson.position,
+    })),
+  }));
+     return updatedItems;
+   });
+    },[data])
   function toggleChapter(chapterId: string) {
     setItems(
       items.map((chapter) =>
@@ -177,6 +192,27 @@ function handleDragEnd(event: DragEndEvent) {
     const previousItems = items;
 
     setItems(updatedChaptersForState);
+
+    if (courseId) {
+      const chapterToUpdate = updatedChaptersForState.map((chapter) => ({
+        id: chapter.id,
+        position:chapter.order
+      }))
+      const reorderPromise = () => 
+        reorderChapter(courseId,chapterToUpdate)
+      toast.promise(reorderPromise(), {
+        loading: "Rordering chapers...",
+        success: (result) => {
+          if (result.status === 'success') return result.message;
+          throw new Error(result.message)
+        },
+        error: () => {
+          setItems(previousItems);
+          return "Failed to reorder chapters"
+        }
+      })
+
+    }
     return;
   }
  
