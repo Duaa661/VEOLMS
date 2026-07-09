@@ -16,23 +16,21 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { tryCatch } from "@/hooks/try-catch";
-import { deleteLesson } from "../action";
+import { deleteChapter, deleteLesson } from "../action";
 import { toast } from "sonner";
 
-const DeleteLesson = ({
+const DeleteChapter = ({
   chapterId,
   courseId,
-  lessonId,
 }: {
   chapterId: string;
   courseId: string;
-  lessonId: string;
 }) => {
   const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition()
   async function OnSubmit() {
     startTransition(async () => {
-      const { data: result, error } = await tryCatch(deleteLesson({ chapterId, courseId, lessonId }))
+      const { data: result, error } = await tryCatch(deleteChapter({ chapterId, courseId }))
       
           if (error) {
             toast.error("An unexpected error occurred. Please try again");
@@ -64,7 +62,7 @@ const DeleteLesson = ({
 
           <AlertDialogDescription>
             This action cannot be undone. This will permanently delete this
-            lesson.
+            chapter cannot be return.
           </AlertDialogDescription>
         </AlertDialogHeader>
 
@@ -80,4 +78,4 @@ const DeleteLesson = ({
   );
 };
 
-export default DeleteLesson;
+export default DeleteChapter;
