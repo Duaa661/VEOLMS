@@ -146,6 +146,8 @@ screenshots/
 ├── drag-drop.png
 ├── new-chapter.png
 ├── new-Lesson.png
+├── delete-chapter.png
+├── delete-lesson.png
 ├── analytics.png
 ├── checkout.png
 ├── student-dashboard.png
@@ -200,6 +202,18 @@ screenshots/
 ## New Lesson
 
 ![DnD](./screenshots/new-lesson.png)
+
+
+
+## Delete Chapter
+
+![DnD](./screenshots/delete-chapter.png)
+
+
+
+## Delete Lesson
+
+![DnD](./screenshots/delete-lesson.png)
 
 
 ## Analytics
