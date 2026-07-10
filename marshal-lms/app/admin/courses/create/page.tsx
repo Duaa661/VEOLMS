@@ -24,11 +24,13 @@ import { tryCatch } from "@/hooks/try-catch";
 import { CreateCourses } from "./action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { useConfetti } from "@/hooks/use-confetti";
 
 export default function CourseCreationPage() {
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [Pending, startTransition] = useTransition();
   const router = useRouter();
+  const {triggerConfetti}=useConfetti()
   const form = useForm<CourseSchemaType>({
     resolver: zodResolver(courseSchema),
     defaultValues: {
@@ -58,6 +60,7 @@ export default function CourseCreationPage() {
 
       if (result.status === "success") {
         toast.success(result.message);
+        triggerConfetti()
         form.reset();
         router.push("/admin/courses");
       } else {
@@ -201,7 +204,7 @@ export default function CourseCreationPage() {
                 control={form.control}
                 name="fileKey"
                 render={({ field }) => (
-                  <Uploader onChange={field.onChange} value={field.value} />
+                  <Uploader onChange={field.onChange} value={field.value} filetypeAccepted="image" />
                 )}
               />
 
