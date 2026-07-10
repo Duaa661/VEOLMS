@@ -148,6 +148,9 @@ screenshots/
 ├── new-Lesson.png
 ├── delete-chapter.png
 ├── delete-lesson.png
+├── lesson-update.png
+├── lesson-update-1.png
+├── lesson-update-2.png
 ├── analytics.png
 ├── checkout.png
 ├── student-dashboard.png
@@ -214,6 +217,14 @@ screenshots/
 ## Delete Lesson
 
 ![DnD](./screenshots/delete-lesson.png)
+
+## Lesson Update
+
+![DnD](./screenshots/lesson-update.png)
+
+![DnD](./screenshots/lesson-update-1.png)
+
+![DnD](./screenshots/lesson-update-2.png)
 
 
 ## Analytics

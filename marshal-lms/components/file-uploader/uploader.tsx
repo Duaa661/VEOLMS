@@ -1,13 +1,16 @@
 "use client";
+
 import Image from "next/image";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
+
 import { cn } from "@/lib/utils";
+import { constructObjectUrl } from "@/hooks/use-construct-url";
+
 import { Card, CardContent } from "../ui/card";
 import { RenderEmptyState, RenderErrorState } from "./RenderState";
-import { constructObjectUrl } from "@/hooks/use-construct-url";
 
 interface UploadState {
   file: File | null;
@@ -22,23 +25,30 @@ interface UploadState {
 interface isAppProps {
   value?: string;
   onChange?: (value: string) => void;
+  filetypeAccepted: "image" | "video";
 }
 
-const MAX_FILE_SIZE = 5 * 1024 * 1024;
-
-
-export function Uploader({ onChange, value }: isAppProps) {
+export function Uploader({ onChange, value, filetypeAccepted }: isAppProps) {
   const fileUrl = value ? constructObjectUrl(value) : "";
-  const initialState: UploadState = {
-  file: null,
-  objectUrl: fileUrl,
-  key: value,
-  uploading: false,
-  progress: 0,
-  error: false,
-  isDeleting: false,
-};
+
+  const initialState = useMemo<UploadState>(
+    () => ({
+      file: null,
+      objectUrl: fileUrl,
+      key: value,
+      uploading: false,
+      progress: 0,
+      error: false,
+      isDeleting: false,
+    }),
+    [fileUrl, value],
+  );
+
   const [state, setState] = useState<UploadState>(initialState);
+
+  useEffect(() => {
+    setState(initialState);
+  }, [initialState]);
 
   useEffect(() => {
     return () => {
@@ -59,6 +69,7 @@ export function Uploader({ onChange, value }: isAppProps) {
           ...prev,
           isDeleting: true,
         }));
+
         if (state.key) {
           const response = await fetch("/api/s3/delete", {
             method: "DELETE",
@@ -83,12 +94,22 @@ export function Uploader({ onChange, value }: isAppProps) {
           URL.revokeObjectURL(state.objectUrl);
         }
 
-        setState(initialState);
+        onChange?.("");
 
-        toast.success("Image deleted successfully.");
+        setState({
+          file: null,
+          objectUrl: "",
+          key: undefined,
+          uploading: false,
+          progress: 0,
+          error: false,
+          isDeleting: false,
+        });
+
+        toast.success("File deleted successfully.");
       } catch (error) {
         toast.error(
-          error instanceof Error ? error.message : "Failed to delete image.",
+          error instanceof Error ? error.message : "Failed to delete file.",
         );
 
         setState((prev) => ({
@@ -97,87 +118,91 @@ export function Uploader({ onChange, value }: isAppProps) {
         }));
       }
     },
-    [state,onChange],
+    [state, onChange],
   );
 
-  const uploadFile = useCallback(async (file: File) => {
-    try {
-      setState((prev) => ({
-        ...prev,
-        uploading: true,
-        progress: 0,
-        error: false,
-      }));
+  const uploadFile = useCallback(
+    async (file: File) => {
+      try {
+        setState((prev) => ({
+          ...prev,
+          uploading: true,
+          progress: 0,
+          error: false,
+        }));
 
-      const res = await fetch("/api/s3/upload", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          filename: file.name,
-          contentType: file.type,
-          size: file.size,
-          isImage: file.type.startsWith("image"),
-        }),
-      });
+        const res = await fetch("/api/s3/upload", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            filename: file.name,
+            contentType: file.type,
+            size: file.size,
+            isImage: filetypeAccepted === "image",
+          }),
+        });
 
-      const data = await res.json();
+        const data = await res.json();
 
-      if (!res.ok || !data.success) {
-        throw new Error(data.message || "Failed to generate upload URL.");
+        if (!res.ok || !data.success) {
+          throw new Error(data.message || "Failed to generate upload URL.");
+        }
+
+        await new Promise<void>((resolve, reject) => {
+          const xhr = new XMLHttpRequest();
+
+          xhr.open("PUT", data.uploadUrl);
+          xhr.setRequestHeader("Content-Type", file.type);
+
+          xhr.upload.onprogress = (event) => {
+            if (!event.lengthComputable) return;
+
+            setState((prev) => ({
+              ...prev,
+              progress: Math.round((event.loaded / event.total) * 100),
+            }));
+          };
+
+          xhr.onload = () => {
+            if (xhr.status === 200) {
+              resolve();
+            } else {
+              reject(new Error(`Upload failed (${xhr.status})`));
+            }
+          };
+
+          xhr.onerror = () => reject(new Error("Network error."));
+          xhr.onabort = () => reject(new Error("Upload aborted."));
+
+          xhr.send(file);
+        });
+
+        setState((prev) => ({
+          ...prev,
+          uploading: false,
+          progress: 100,
+          key: data.key,
+        }));
+
+        onChange?.(data.key);
+
+        toast.success("File uploaded successfully.");
+      } catch (error) {
+        setState((prev) => ({
+          ...prev,
+          uploading: false,
+          error: true,
+        }));
+
+        toast.error(
+          error instanceof Error ? error.message : "File upload failed.",
+        );
       }
-
-      await new Promise<void>((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-
-        xhr.open("PUT", data.uploadUrl);
-        xhr.setRequestHeader("Content-Type", file.type);
-
-        xhr.upload.onprogress = (event) => {
-          if (!event.lengthComputable) return;
-
-          setState((prev) => ({
-            ...prev,
-            progress: Math.round((event.loaded / event.total) * 100),
-          }));
-        };
-
-        xhr.onload = () => {
-          if (xhr.status === 200) {
-            resolve();
-          } else {
-            reject(new Error(`Upload failed (${xhr.status})`));
-          }
-        };
-
-        xhr.onerror = () => reject(new Error("Network error."));
-        xhr.onabort = () => reject(new Error("Upload aborted."));
-
-        xhr.send(file);
-      });
-
-      setState((prev) => ({
-        ...prev,
-        uploading: false,
-        progress: 100,
-        key: data.key,
-      }));
-
-      onChange?.(data.key);
-      toast.success("File uploaded successfully.");
-    } catch (error) {
-      setState((prev) => ({
-        ...prev,
-        uploading: false,
-        error: true,
-      }));
-
-      toast.error(
-        error instanceof Error ? error.message : "File upload failed.",
-      );
-    }
-  }, []);
+    },
+    [filetypeAccepted, onChange],
+  );
 
   const onDrop = useCallback(
     (acceptedFiles: File[]) => {
@@ -203,41 +228,53 @@ export function Uploader({ onChange, value }: isAppProps) {
 
       uploadFile(file);
     },
-    [uploadFile, state.objectUrl],
+    [state.objectUrl, uploadFile],
   );
 
-  const onDropRejected = useCallback((rejections: FileRejection[]) => {
-    const error = rejections[0]?.errors[0];
+  const onDropRejected = useCallback(
+    (rejections: FileRejection[]) => {
+      const error = rejections[0]?.errors[0];
 
-    if (!error) return;
+      if (!error) return;
 
-    switch (error.code) {
-      case "too-many-files":
-        toast.error("Only one file can be uploaded.");
-        break;
+      switch (error.code) {
+        case "too-many-files":
+          toast.error("Only one file can be uploaded.");
+          break;
 
-      case "file-too-large":
-        toast.error("Maximum file size is 5 MB.");
-        break;
+        case "file-too-large":
+          toast.error("Maximum file size is 5 MB.");
+          break;
 
-      case "file-invalid-type":
-        toast.error("Only image files are allowed.");
-        break;
+        case "file-invalid-type":
+          toast.error(
+            filetypeAccepted === "image"
+              ? "Only image files are allowed."
+              : "Only video files are allowed.",
+          );
+          break;
 
-      default:
-        toast.error(error.message);
-    }
-  }, []);
+        default:
+          toast.error(error.message);
+      }
+    },
+    [filetypeAccepted],
+  );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     onDropRejected,
     multiple: false,
     maxFiles: 1,
-    maxSize: MAX_FILE_SIZE,
-    accept: {
-      "image/*": [],
-    },
+    maxSize: filetypeAccepted==="image"?5*1024*1024 :5000*1024*1024,
+    accept:
+      filetypeAccepted === "image"
+        ? {
+            "image/*": [],
+          }
+        : {
+            "video/*": [],
+          },
   });
 
   return (
@@ -263,7 +300,7 @@ export function Uploader({ onChange, value }: isAppProps) {
             {state.isDeleting ? (
               <Loader2 className="size-4 animate-spin" />
             ) : (
-              <X className="h-4 w-4" />
+              <X className="size-4" />
             )}
           </button>
         )}
@@ -275,25 +312,39 @@ export function Uploader({ onChange, value }: isAppProps) {
             <div className="h-2 w-56 overflow-hidden rounded-full bg-muted">
               <div
                 className="h-full bg-primary transition-all"
-                style={{ width: `${state.progress}%` }}
+                style={{
+                  width: `${state.progress}%`,
+                }}
               />
             </div>
 
             <p className="text-sm text-muted-foreground">{state.progress}%</p>
           </div>
         ) : state.error ? (
-          <RenderErrorState />
+          <RenderErrorState filetypeAccepted={filetypeAccepted} />
         ) : state.objectUrl ? (
           <div className="relative h-full w-full">
-            <Image
-              src={state.objectUrl}
-              alt="Preview"
-              fill
-              className="rounded-lg object-cover"
-            />
+            {filetypeAccepted === "image" ? (
+              <Image
+                src={state.objectUrl}
+                alt="Preview"
+                fill
+                unoptimized
+                className="rounded-lg object-cover"
+              />
+            ) : (
+              <video
+                src={state.objectUrl}
+                controls
+                className="h-full w-full rounded-lg object-cover"
+              />
+            )}
           </div>
         ) : (
-          <RenderEmptyState isDragActive={isDragActive} />
+          <RenderEmptyState
+            isDragActive={isDragActive}
+            filetypeAccepted={filetypeAccepted}
+          />
         )}
       </CardContent>
     </Card>

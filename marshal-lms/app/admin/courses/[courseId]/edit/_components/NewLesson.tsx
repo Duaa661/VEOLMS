@@ -50,6 +50,9 @@ export default function NewLessonModal({ courseId, chapterId }: Props) {
     },
   });
   function handleOpenChange(open: boolean) {
+    if(!open){
+      form.reset();
+    }
     setOpen(open);
   }
   async function onSubmit(values: LessonSchemaType) {
