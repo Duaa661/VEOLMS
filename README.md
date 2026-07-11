@@ -151,6 +151,7 @@ screenshots/
 ├── lesson-update.png
 ├── lesson-update-1.png
 ├── lesson-update-2.png
+├── public-course.png
 ├── analytics.png
 ├── checkout.png
 ├── student-dashboard.png
@@ -226,6 +227,12 @@ screenshots/
 
 ![DnD](./screenshots/lesson-update-2.png)
 
+
+## Public Courses
+
+![Courses](./screenshots/public-course.png)
+
+---
 
 ## Analytics
 

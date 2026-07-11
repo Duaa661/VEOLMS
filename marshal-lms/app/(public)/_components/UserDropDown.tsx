@@ -73,7 +73,7 @@ export function UserDropdown() {
         </DropdownMenuItem>
 
         <DropdownMenuItem asChild>
-          <Link href="/course" className="cursor-pointer">
+          <Link href="/courses" className="cursor-pointer">
             <BookOpen className="mr-2 h-4 w-4" />
             Courses
           </Link>
