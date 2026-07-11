@@ -51,10 +51,10 @@ export const courseSchema = z.object({
       message: "Course description is required",
     }),
 
-  // Match this with your form field
-fileKey: z.string().min(1, {
-  message: "Course thumbnail is required",
-}),
+  fileKey: z.string().min(1, {
+    message: "Course thumbnail is required",
+  }),
+
   category: z
     .string()
     .trim()
@@ -63,17 +63,13 @@ fileKey: z.string().min(1, {
     }),
 
   price: z.coerce
-    .number({
-      invalid_type_error: "Price is required",
-    })
+    .number()
     .min(1, {
       message: "Price must be greater than 0",
     }),
 
   duration: z.coerce
-    .number({
-      invalid_type_error: "Duration is required",
-    })
+    .number()
     .min(1, {
       message: "Duration must be at least 1 hour",
     })
@@ -98,11 +94,9 @@ export const chapterSchema = z.object({
       message: "Name must be at least 3 characters long",
     }),
 
-  courseId: z
-    .string()
-    .uuid({
-      message: "Course ID is required",
-    }),
+  courseId: z.string().uuid({
+    message: "Course ID is required",
+  }),
 });
 
 export const lessonSchema = z.object({
@@ -113,25 +107,26 @@ export const lessonSchema = z.object({
       message: "Name must be at least 3 characters long",
     }),
 
-  courseId: z
-    .string()
-    .uuid({
-      message: "Course ID is required",
-    }),
-  chapterId: z
-    .string()
-    .uuid({
-      message: "Chapter ID is required",
-    }),
-  description:
-    z.string().min(3, { message: "Description must be at least 3 character long" }).optional(),
-  thumbnailKey:
-    z.string().optional(),
-  videoUrl:
-  z.string().optional()
-  
-});
-export type CourseSchemaType = z.infer<typeof courseSchema>;
+  courseId: z.string().uuid({
+    message: "Course ID is required",
+  }),
 
+  chapterId: z.string().uuid({
+    message: "Chapter ID is required",
+  }),
+
+  description: z
+    .string()
+    .min(3, {
+      message: "Description must be at least 3 characters long",
+    })
+    .optional(),
+
+  thumbnailKey: z.string().optional(),
+
+  videoUrl: z.string().optional(),
+});
+
+export type CourseSchemaType = z.infer<typeof courseSchema>;
 export type ChapterSchemaType = z.infer<typeof chapterSchema>;
 export type LessonSchemaType = z.infer<typeof lessonSchema>;

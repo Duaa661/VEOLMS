@@ -25,14 +25,18 @@ import { CreateCourses } from "./action";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 import { useConfetti } from "@/hooks/use-confetti";
-
+import { z } from "zod";
 export default function CourseCreationPage() {
   const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
   const [Pending, startTransition] = useTransition();
   const router = useRouter();
   const {triggerConfetti}=useConfetti()
-  const form = useForm<CourseSchemaType>({
-    resolver: zodResolver(courseSchema),
+  const form = useForm<
+  z.input<typeof courseSchema>,
+  any,
+  z.output<typeof courseSchema>
+>({
+  resolver: zodResolver(courseSchema),
     defaultValues: {
       title: "",
       description: "",
@@ -47,7 +51,7 @@ export default function CourseCreationPage() {
     },
   });
 
-  function onSubmit(values: CourseSchemaType) {
+ function onSubmit(values: z.output<typeof courseSchema>) {
     startTransition(async () => {
       const { data: result, error } = await tryCatch(CreateCourses(values));
 

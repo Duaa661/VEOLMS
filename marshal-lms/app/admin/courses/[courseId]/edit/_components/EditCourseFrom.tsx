@@ -14,7 +14,7 @@ import { Uploader } from "@/components/file-uploader/uploader";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
 import { tryCatch } from "@/hooks/try-catch";
 import { toast } from "sonner";
-
+import { z } from "zod";
 import { editCourse } from "../action";
 import { AdminCourseSingularType } from "@/app/data/admin/admin-get-course";
 
@@ -26,23 +26,27 @@ export default function EditCourseForm({ data }: EditCourseFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const form = useForm<CourseSchemaType>({
-    resolver: zodResolver(courseSchema),
-    mode: "onChange",
-    defaultValues: {
-      title: data.title ?? "",
-      slug: data.slug ?? "",
-      description: data.description ?? "",
-      smallDescription: data.smallDescription ?? "",
-      fileKey: data.fileKey ?? "",
-      category: data.category as CourseSchemaType["category"],
-      level: data.level,
-      status: data.status,
-      duration: data.duration,
-      price: data.price,
-    },
-  });
-  const onSubmit = (values: CourseSchemaType) => {
+  const form = useForm<
+  z.input<typeof courseSchema>,
+  any,
+  z.output<typeof courseSchema>
+>({
+  resolver: zodResolver(courseSchema),
+  mode: "onChange",
+  defaultValues: {
+    title: data.title ?? "",
+    slug: data.slug ?? "",
+    description: data.description ?? "",
+    smallDescription: data.smallDescription ?? "",
+    fileKey: data.fileKey ?? "",
+    category: data.category ?? "",
+    level: data.level,
+    status: data.status,
+    duration: data.duration,
+    price: data.price,
+  },
+});
+  const onSubmit = (values: z.output<typeof courseSchema>) => {
     startTransition(async () => {
       const { data: result, error } = await tryCatch(
         editCourse(values, data.id),
@@ -181,7 +185,7 @@ export default function EditCourseForm({ data }: EditCourseFormProps) {
           control={form.control}
           name="fileKey"
           render={({ field }) => (
-            <Uploader value={field.value} onChange={field.onChange} />
+            <Uploader value={field.value} onChange={field.onChange} filetypeAccepted="image"/>
           )}
         />
 
