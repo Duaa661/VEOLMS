@@ -1,6 +1,5 @@
 "use client";
 
-import React, { ReactNode, useEffect, useState } from "react";
 import {
   DndContext,
   PointerSensor,
@@ -8,18 +7,14 @@ import {
   closestCenter,
   useSensor,
   useSensors,
+} from "@dnd-kit/core";
+
+import type {
   DragEndEvent,
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
-
-import {
-  SortableContext,
-  useSortable,
-  verticalListSortingStrategy,
-  arrayMove,
-  sortableKeyboardCoordinates,
-} from "@dnd-kit/sortable";
-
+import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import { CSS } from "@dnd-kit/utilities";
 import {
   ChevronDown,
@@ -46,6 +41,7 @@ import NewChapterModel from "./NewChapter";
 import NewLessonModal from "./NewLesson";
 import DeleteLesson from "./DeleteLesson";
 import DeleteChapter from "./DeleteChapter";
+import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
 
 interface SortableItemProps {
   id: string;
@@ -86,55 +82,44 @@ function SortableItem({ id, children, className, data }: SortableItemProps) {
     </div>
   );
 }
-interface LessonItem {
-  id: string;
-  title: string;
-  order: number;
-}
 
-interface ChapterItem {
-  id: string;
-  title: string;
-  order: number;
-  isOpen: boolean;
-  lessons: LessonItem[];
-}
 interface CourseFormStructureProps {
   data: AdminCourseSingularType;
 }
 export default function CourseFormStructure({
   data,
 }: CourseFormStructureProps) {
-  const initialItems: ChapterItem[] = data.chapter.map((chapter) => ({
-  id: chapter.id,
-  title: chapter.title,
-  order: chapter.position,
-  isOpen: true,
-  lessons: chapter.lessons.map((lesson) => ({
-    id: lesson.id,
-    title: lesson.title,
-    order: lesson.position,
-  })),
-}));
-
-const [items, setItems] = useState<ChapterItem[]>(initialItems);
+  const initialItems =
+    data.chapter.map((chapter) => ({
+      id: chapter.id,
+      title: chapter.title,
+      order: chapter.position,
+      isOpen: true,
+      lessons: chapter.lessons.map((lesson) => ({
+        id: lesson.id,
+        title: lesson.title,
+        order: lesson.position,
+      })),
+    })) ?? [];
+  
+  const [items, setItems] = useState(initialItems);
   useEffect(() => {
-   setItems((prevItems: ChapterItem[]) => {
-  const updatedItems: ChapterItem[] = data.chapter.map((chapter) => ({
-    id: chapter.id,
-    title: chapter.title,
-    order: chapter.position,
-    isOpen:
-      prevItems.find((item) => item.id === chapter.id)?.isOpen ?? true,
-    lessons: chapter.lessons.map((lesson) => ({
-      id: lesson.id,
-      title: lesson.title,
-      order: lesson.position,
-    })),
-  }));
+    setItems((prevItems) => {
+      const updatedItems = data.chapter.map((chapter) => ({
+        id: chapter.id,
+        title: chapter.title,
+        order: chapter.position,
+        isOpen:
+          prevItems.find((item) => item.id === chapter.id)?.isOpen ?? true,
+        lessons: chapter.lessons.map((lesson) => ({
+          id: lesson.id,
+          title: lesson.title,
+          order: lesson.position,
+        })),
+      }));
 
-  return updatedItems;
-});
+      return updatedItems;
+    });
   }, [data]);
   function toggleChapter(chapterId: string) {
     setItems(
