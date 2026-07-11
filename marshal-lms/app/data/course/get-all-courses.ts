@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/db";
 
 export async function getAllCourses() {
-  return await prisma.course.findMany({
+  const data = await prisma.course.findMany({
     where: {
       status: "Published",
     },
@@ -20,8 +20,8 @@ export async function getAllCourses() {
       category: true,
     },
   });
+
+  return data;
 }
 
-export type PublicCourseType = Awaited<
-  ReturnType<typeof getAllCourses>
->[number];
+export type PublicCourseType = Awaited<ReturnType<typeof getAllCourses>>[0];
