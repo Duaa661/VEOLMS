@@ -56,5 +56,6 @@ export async function AdminGetCourses(id: string) {
   return data;
 }
 
-export type AdminCourseSingularType =
-  Awaited<ReturnType<typeof AdminGetCourses>>;
+export type AdminCourseSingularType = NonNullable<
+  Awaited<ReturnType<typeof AdminGetCourses>>
+>;
