@@ -86,48 +86,55 @@ function SortableItem({ id, children, className, data }: SortableItemProps) {
     </div>
   );
 }
+interface LessonItem {
+  id: string;
+  title: string;
+  order: number;
+}
 
+interface ChapterItem {
+  id: string;
+  title: string;
+  order: number;
+  isOpen: boolean;
+  lessons: LessonItem[];
+}
 interface CourseFormStructureProps {
   data: AdminCourseSingularType;
 }
 export default function CourseFormStructure({
   data,
 }: CourseFormStructureProps) {
-  const initialItems = data.chapter.map(
-  (chapter: AdminCourseSingularType["chapter"][number]) => ({
+  const initialItems: ChapterItem[] = data.chapter.map((chapter) => ({
+  id: chapter.id,
+  title: chapter.title,
+  order: chapter.position,
+  isOpen: true,
+  lessons: chapter.lessons.map((lesson) => ({
+    id: lesson.id,
+    title: lesson.title,
+    order: lesson.position,
+  })),
+}));
+
+const [items, setItems] = useState<ChapterItem[]>(initialItems);
+  useEffect(() => {
+   setItems((prevItems: ChapterItem[]) => {
+  const updatedItems: ChapterItem[] = data.chapter.map((chapter) => ({
     id: chapter.id,
     title: chapter.title,
     order: chapter.position,
-    isOpen: true,
-    lessons: chapter.lessons.map(
-      (
-        lesson: AdminCourseSingularType["chapter"][number]["lessons"][number]
-      ) => ({
-        id: lesson.id,
-        title: lesson.title,
-        order: lesson.position,
-      })
-    ),
-  })
-);
-  const [items, setItems] = useState(initialItems);
-  useEffect(() => {
-    setItems((prevItems) => {
-      const updatedItems = data.chapter.map((chapter) => ({
-        id: chapter.id,
-        title: chapter.title,
-        order: chapter.position,
-        isOpen:
-          prevItems.find((item) => item.id === chapter.id)?.isOpen ?? true,
-        lessons: chapter.lessons.map((lesson) => ({
-          id: lesson.id,
-          title: lesson.title,
-          order: lesson.position,
-        })),
-      }));
+    isOpen:
+      prevItems.find((item) => item.id === chapter.id)?.isOpen ?? true,
+    lessons: chapter.lessons.map((lesson) => ({
+      id: lesson.id,
+      title: lesson.title,
+      order: lesson.position,
+    })),
+  }));
 
-      return updatedItems;
-    });
+  return updatedItems;
+});
   }, [data]);
   function toggleChapter(chapterId: string) {
     setItems(
