@@ -93,19 +93,19 @@ interface CourseFormStructureProps {
 export default function CourseFormStructure({
   data,
 }: CourseFormStructureProps) {
-  const initialItems =
-    data.chapter.map((chapter) => ({
-      id: chapter.id,
-      title: chapter.title,
-      order: chapter.position,
-      isOpen: true,
-      lessons: chapter.lessons.map((lesson) => ({
-        id: lesson.id,
-        title: lesson.title,
-        order: lesson.position,
-      })),
-    })) ?? [];
-  console.log("Intial Item ", initialItems);
+  const initialItems = data.chapter.map(
+  (chapter: AdminCourseSingularType["chapter"][number]) => ({
+    id: chapter.id,
+    title: chapter.title,
+    order: chapter.position,
+    isOpen: true,
+    lessons: chapter.lessons.map((lesson) => ({
+      id: lesson.id,
+      title: lesson.title,
+      order: lesson.position,
+    })),
+  })
+);
   const [items, setItems] = useState(initialItems);
   useEffect(() => {
     setItems((prevItems) => {
