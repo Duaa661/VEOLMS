@@ -14,10 +14,6 @@ import {
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
-type LessonItem = {
-  id: string;
-  position: number;
-};
 
 const aj = arcjet
   .withRule(

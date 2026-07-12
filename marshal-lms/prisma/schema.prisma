@@ -1,4 +1,3 @@
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -7,42 +6,37 @@ datasource db {
   provider = "postgresql"
   url      = env("DATABASE_URL")
 }
-
 model User {
   id            String    @id
   name          String
-  email         String
+  email         String    @unique
   emailVerified Boolean   @default(false)
   image         String?
   createdAt     DateTime  @default(now())
   updatedAt     DateTime  @updatedAt
-  sessions      Session[]
-  accounts      Account[]
-  courses       Course[]
-  role          String?
-  banned        Boolean?  @default(false)
-  banReason     String?
   banExpires    DateTime?
+  banReason     String?
+  banned        Boolean?  @default(false)
+  role          String?
+  courses       Course[]
+  accounts      Account[]
+  sessions      Session[]
 
-  @@unique([email])
   @@map("user")
 }
-// create a session model
 
 model Session {
-  id        String   @id
-  expiresAt DateTime
-  token     String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  ipAddress String?
-  userAgent String?
-  userId    String
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-
+  id             String   @id
+  expiresAt      DateTime
+  token          String   @unique
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  ipAddress      String?
+  userAgent      String?
+  userId         String
   impersonatedBy String?
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@index([userId])
   @@map("session")
 }
@@ -52,7 +46,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -62,6 +55,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -79,30 +73,47 @@ model Verification {
   @@map("verification")
 }
 
-// create a course model
-
 model Course {
-  id String @id @default(uuid())
-
+  id               String       @id @default(uuid())
   title            String
+  fileKey          String
+  price            Int
+  duration         Int
+  level            CourseLevel  @default(Beginner)
+  category         String
+  slug             String       @unique
+  status           CourseStatus @default(Draft)
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+  userId           String
   description      String
   smallDescription String
+  chapter          Chapter[]
+  user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
 
-  fileKey  String
-  price    Int
-  duration Int
-  level    CourseLevel  @default(Beginner)
-  category String
-  slug     String       @unique
-  status   CourseStatus @default(Draft)
-
+model Chapter {
+  id        String   @id @default(uuid())
+  title     String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  courseId  String
+  position  Int
+  Course    Course   @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  lessons   Lesson[]
+}
 
-  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId String
-
-  chapter Chapter[]
+model Lesson {
+  id           String   @id @default(uuid())
+  title        String
+  description  String?
+  thumbnailKey String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  chapterId    String
+  position     Int
+  videoUrl     String?
+  Chapter      Chapter  @relation(fields: [chapterId], references: [id], onDelete: Cascade)
 }
 
 enum CourseLevel {
@@ -115,32 +126,4 @@ enum CourseStatus {
   Draft
   Published
   Archived
-}
-
-
-model Chapter{
-  id String @id @default (uuid())
-
-  title String
-  position Int
-
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
-Course Course @relation(fields: [courseId], references: [id],onDelete: Cascade)
-courseId String
-lessons Lesson[]
-}
-
-model Lesson{
-  id String @id @default (uuid())
-
-  title String
-  description String?
-  thumbnailKey String?
-  videoUrl   String?
-  position Int
-createdAt DateTime @default(now())
-updatedAt DateTime @updatedAt
-Chapter Chapter @relation(fields: [chapterId], references: [id],onDelete: Cascade)
-chapterId String
 }
