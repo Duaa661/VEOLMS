@@ -7,18 +7,20 @@ import {
   AdminCourseCard,
   AdminCourseCardSkelton,
 } from "./_components/AdminCourseCard";
+import { CourseLevel, CourseStatus } from "@prisma/client";
 
 type CourseItem = {
   id: string;
   title: string;
-  description: string;
-  fileKey: string | null;
+  smallDescription: string;
+  fileKey: string;
   price: number;
-  level: string;
   duration: number;
-  status: string;
+  level: CourseLevel;
+  category: string;
+  slug: string;
+  status: CourseStatus;
 };
-
 const Page = () => {
   return (
     <>
