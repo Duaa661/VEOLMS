@@ -63,7 +63,7 @@ const Navbar = () => {
                 </Link>
 
                 <Link
-                  href="/register"
+                  href="/login"
                   className={buttonVariants()}
                 >
                   Get Started
