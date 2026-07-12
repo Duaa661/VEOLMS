@@ -1,82 +1,93 @@
-"use server"
+"use server";
 
-import { requireAdmin } from "@/app/data/admin/require-user"
+import { requireAdmin } from "@/app/data/admin/require-user";
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/type";
-import { chapterSchema, ChapterSchemaType, courseSchema, CourseSchemaType, lessonSchema, LessonSchemaType } from "@/lib/zodSchemas";
+import {
+  chapterSchema,
+  ChapterSchemaType,
+  courseSchema,
+  CourseSchemaType,
+  lessonSchema,
+  LessonSchemaType,
+} from "@/lib/zodSchemas";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
 
-const aj = arcjet.withRule(
-  detectBot({
-    mode: "LIVE",
-    allow: []
-  })
-).withRule(
-  fixedWindow({
-    mode: "LIVE",
-    window: "1m",
-    max: 5
-  })
-)
-export async function editCourse(data:CourseSchemaType,courseId:string): Promise<ApiResponse> {
-    const user = await requireAdmin();
-    try {
-        const req = await request();
-        const decision = await aj.protect(req, {
-            fingerprint:user.user.id
-        })
-        if (decision.isDenied()) {
+const aj = arcjet
+  .withRule(
+    detectBot({
+      mode: "LIVE",
+      allow: [],
+    }),
+  )
+  .withRule(
+    fixedWindow({
+      mode: "LIVE",
+      window: "1m",
+      max: 5,
+    }),
+  );
+export async function editCourse(
+  data: CourseSchemaType,
+  courseId: string,
+): Promise<ApiResponse> {
+  const user = await requireAdmin();
+  try {
+    const req = await request();
+    const decision = await aj.protect(req, {
+      fingerprint: user.user.id,
+    });
+    if (decision.isDenied()) {
       if (!decision.reason.isRateLimit()) {
         return {
           status: "error",
-          message: "Looks like you are a malicous user"
-        }
-      }
-      else {
+          message: "Looks like you are a malicous user",
+        };
+      } else {
         return {
           status: "error",
-          message: "You are a bot! if this is a mistake correct our support"
-        }
+          message: "You are a bot! if this is a mistake correct our support",
+        };
       }
-        }
-    
-        const result = courseSchema.safeParse(data);
-        if (!result.success) {
-            return {
-                status: "error",
-                message:"Invalid data"
-            }
-        }
-        await prisma.course.update({
-            where: {
-                id: courseId,
-                userId:user.user.id
-            },
-            data: {
-                ...result.data
-            }
-        })
-        return {
-            status: 'success',
-            message:'Course updated Sucessfully'
-        }
-    } catch (error) {
-      console.log(error)
-        return {
-            status: 'success',
-            message:'Failed to update Course'
-        }
     }
+
+    const result = courseSchema.safeParse(data);
+    if (!result.success) {
+      return {
+        status: "error",
+        message: "Invalid data",
+      };
+    }
+    await prisma.course.update({
+      where: {
+        id: courseId,
+        userId: user.user.id,
+      },
+      data: {
+        ...result.data,
+      },
+    });
+    return {
+      status: "success",
+      message: "Course updated Sucessfully",
+    };
+  } catch (error) {
+    console.log(error);
+    return {
+      status: "success",
+      message: "Failed to update Course",
+    };
+  }
 }
 // reoder lesson with spacific postion
 export async function reorderforLessons(
   chapterId: string,
   lessons: { id: string; position: number }[],
-  courseId: string
+  courseId: string,
 ): Promise<ApiResponse> {
-   await requireAdmin()
+  await requireAdmin();
   try {
     if (!lessons.length) {
       return {
@@ -92,7 +103,7 @@ export async function reorderforLessons(
         data: {
           position: lesson.position,
         },
-      })
+      }),
     );
 
     await prisma.$transaction(updates);
@@ -115,28 +126,28 @@ export async function reorderforLessons(
 // reoder chapter with spacific postion
 export async function reorderChapter(
   courseId: string,
-  chapters: { id: string; position:number}[]
-): Promise<ApiResponse>{
-  await requireAdmin()
+  chapters: { id: string; position: number }[],
+): Promise<ApiResponse> {
+  await requireAdmin();
   try {
     if (!chapters || chapters.length === 0) {
       return {
-        status: 'error',
-        message:'No chapters provided for reordering'
-      }
+        status: "error",
+        message: "No chapters provided for reordering",
+      };
     }
     const updates = chapters.map((chapter) =>
       prisma.chapter.update({
         where: {
           id: chapter.id,
-          courseId:courseId,
+          courseId: courseId,
         },
         data: {
           position: chapter.position,
         },
-      })
+      }),
     );
-   await prisma.$transaction(updates);
+    await prisma.$transaction(updates);
 
     revalidatePath(`/admin/courses/${courseId}/edit`);
 
@@ -144,114 +155,112 @@ export async function reorderChapter(
       status: "success",
       message: "Chapter reordered successfully",
     };
-   
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
-      status: 'error',
-      message: "Failed to reoder chapters"
-    }
+      status: "error",
+      message: "Failed to reoder chapters",
+    };
   }
 }
 
 // Create a new Chapter function
-export async function createChapter(values:ChapterSchemaType): Promise<ApiResponse>{
+export async function createChapter(
+  values: ChapterSchemaType,
+): Promise<ApiResponse> {
   try {
-    await requireAdmin()
-    const result = chapterSchema.safeParse(values)
+    await requireAdmin();
+    const result = chapterSchema.safeParse(values);
     if (!result.success) {
       return {
         status: "error",
-        message: "Invalid Data"
-      }
+        message: "Invalid Data",
+      };
     }
+    const maxpos = await prisma.chapter.findFirst({
+      where: {
+        courseId: result.data.courseId,
+      },
+      select: {
+        position: true,
+      },
+      orderBy: {
+        position: "desc",
+      },
+    });
 
-    await prisma.$transaction(async (tx) => {
-      const maxpos = await tx.chapter.findFirst({
-        where: {
-          courseId:result.data.courseId
-        },
-        select: {
-          position:true
-        },
-        orderBy: {
-          position:"desc"
-        }
-      })
-
-      await tx.chapter.create({
+    await prisma.$transaction([
+      prisma.chapter.create({
         data: {
           title: result.data.name,
           courseId: result.data.courseId,
-          position:(maxpos?.position ?? 1)+1
-        }
-      })
-    })
-    revalidatePath(`/admin/courses/${result.data.courseId}/edit`)
+          position: (maxpos?.position ?? 0) + 1,
+        },
+      }),
+    ]);
+    revalidatePath(`/admin/courses/${result.data.courseId}/edit`);
 
     return {
-      status: 'success',
-      message:"Chapter Created Sucessfully"
-    }
+      status: "success",
+      message: "Chapter Created Sucessfully",
+    };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
-      status: 'error',
-      message:"Failed to create Chapter"
-    }
-      
+      status: "error",
+      message: "Failed to create Chapter",
+    };
   }
 }
 
 // Create a new Lesson
-export async function createLesson(values:LessonSchemaType): Promise<ApiResponse>{
+export async function createLesson(
+  values: LessonSchemaType,
+): Promise<ApiResponse> {
   try {
-    await requireAdmin()
-    const result = lessonSchema.safeParse(values)
+    await requireAdmin();
+    const result = lessonSchema.safeParse(values);
     if (!result.success) {
       return {
         status: "error",
-        message: "Invalid Data"
-      }
+        message: "Invalid Data",
+      };
     }
 
-    await prisma.$transaction(async (tx) => {
-      const maxpos = await tx.lesson.findFirst({
-        where: {
-          chapterId:result.data.chapterId
-        },
-        select: {
-          position:true
-        },
-        orderBy: {
-          position:"desc"
-        }
-      })
+    const maxpos = await prisma.lesson.findFirst({
+      where: {
+        chapterId: result.data.chapterId,
+      },
+      select: {
+        position: true,
+      },
+      orderBy: {
+        position: "desc",
+      },
+    });
 
-      await tx.lesson.create({
-        data: {
-          title: result.data.name,
-          description: result.data.description,
-          videoUrl: result.data.videoUrl,
-          thumbnailKey: result.data.thumbnailKey,
-          chapterId:result.data.chapterId,
-          position:(maxpos?.position ?? 0)+1
-        }
-      })
-    })
-    revalidatePath(`/admin/courses/${result.data.courseId}/edit`)
+    await prisma.lesson.create({
+      data: {
+        title: result.data.name,
+        description: result.data.description,
+        videoUrl: result.data.videoUrl,
+        thumbnailKey: result.data.thumbnailKey,
+        chapterId: result.data.chapterId,
+        position: (maxpos?.position ?? 0) + 1,
+      },
+    });
+    revalidatePath(`/admin/courses/${result.data.courseId}/edit`);
 
     return {
-      status: 'success',
-      message:"Lesson Created Sucessfully"
-    }
+      status: "success",
+      message: "Lesson Created Sucessfully",
+    };
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
-      status: 'error',
-      message:"Failed to create Chapter"
-    }
-      
+      status: "error",
+      message: "Failed to create Chapter",
+    };
   }
 }
 
@@ -281,8 +290,8 @@ export async function deleteLesson({
           },
           select: {
             id: true,
-            position:true,
-          }
+            position: true,
+          },
         },
       },
     });
@@ -308,14 +317,12 @@ export async function deleteLesson({
     await prisma.lesson.delete({
       where: {
         id: lessonId,
-        chapterId:chapterId
+        chapterId: chapterId,
       },
     });
 
     // Reorder remaining lessons
-    const remainingLessons = chapter.lessons.filter(
-      (l) => l.id !== lessonId
-    );
+    const remainingLessons = chapter.lessons.filter((l) => l.id !== lessonId);
 
     await prisma.$transaction(
       remainingLessons.map((lesson, index) =>
@@ -326,17 +333,16 @@ export async function deleteLesson({
           data: {
             position: index + 1,
           },
-        })
-      )
+        }),
+      ),
     );
-    revalidatePath(`/admin/courses/${courseId}/edit`)
+    revalidatePath(`/admin/courses/${courseId}/edit`);
     return {
       status: "success",
       message: "Lesson deleted and postion reordered successfully.",
     };
-    
   } catch (error) {
-    console.log(error)
+    console.log(error);
     return {
       status: "error",
       message: "Failed to delete lesson.",
@@ -397,9 +403,7 @@ export async function deleteChapter({
     });
 
     // Reorder remaining chapter
-    const remainingChapters = course.chapter.filter(
-      (c) => c.id !== chapterId
-    );
+    const remainingChapters = course.chapter.filter((c) => c.id !== chapterId);
 
     await prisma.$transaction(
       remainingChapters.map((chapter, index) =>
@@ -410,8 +414,8 @@ export async function deleteChapter({
           data: {
             position: index + 1,
           },
-        })
-      )
+        }),
+      ),
     );
 
     revalidatePath(`/admin/courses/${courseId}/edit`);
