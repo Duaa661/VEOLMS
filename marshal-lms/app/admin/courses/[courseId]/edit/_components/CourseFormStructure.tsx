@@ -9,11 +9,8 @@ import {
   useSensors,
 } from "@dnd-kit/core";
 
-import type {
-  DragEndEvent,
-  DraggableSyntheticListeners,
-} from "@dnd-kit/core";
-import {  useState } from "react";
+import type { DragEndEvent, DraggableSyntheticListeners } from "@dnd-kit/core";
+import { useState } from "react";
 import type { ReactNode } from "react";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -40,7 +37,13 @@ import NewChapterModel from "./NewChapter";
 import NewLessonModal from "./NewLesson";
 import DeleteLesson from "./DeleteLesson";
 import DeleteChapter from "./DeleteChapter";
-import { arrayMove, SortableContext, sortableKeyboardCoordinates, useSortable, verticalListSortingStrategy } from "@dnd-kit/sortable";
+import {
+  arrayMove,
+  SortableContext,
+  sortableKeyboardCoordinates,
+  useSortable,
+  verticalListSortingStrategy,
+} from "@dnd-kit/sortable";
 
 interface SortableItemProps {
   id: string;
@@ -88,27 +91,39 @@ interface CourseFormStructureProps {
 export default function CourseFormStructure({
   data,
 }: CourseFormStructureProps) {
-  const [items, setItems] = useState(() =>
-  data.chapter.map((chapter) => ({
-    id: chapter.id,
-    title: chapter.title,
-    order: chapter.position,
-    isOpen: true,
-    lessons: chapter.lessons.map((lesson) => ({
-      id: lesson.id,
-      title: lesson.title,
-      order: lesson.position,
+  type Item = {
+    id: string;
+    title: string;
+    order: number;
+    isOpen: boolean;
+    lessons: {
+      id: string;
+      title: string;
+      order: number;
+    }[];
+  };
+
+  const [items, setItems] = useState<Item[]>(() =>
+    data.chapter.map((chapter) => ({
+      id: chapter.id,
+      title: chapter.title,
+      order: chapter.position,
+      isOpen: true,
+      lessons: chapter.lessons.map((lesson) => ({
+        id: lesson.id,
+        title: lesson.title,
+        order: lesson.position,
+      })),
     })),
-  })),
-);
+  );
   function toggleChapter(chapterId: string) {
-   setItems(prev =>
-  prev.map(chapter =>
-    chapter.id === chapterId
-      ? { ...chapter, isOpen: !chapter.isOpen }
-      : chapter
-  )
-);
+    setItems((prev) =>
+      prev.map((chapter) =>
+        chapter.id === chapterId
+          ? { ...chapter, isOpen: !chapter.isOpen }
+          : chapter,
+      ),
+    );
   }
 
   const sensors = useSensors(
@@ -162,8 +177,8 @@ export default function CourseFormStructure({
         }),
       );
 
-const previousItems = [...items];
-setItems(updatedChaptersForState);
+      const previousItems = [...items];
+      setItems(updatedChaptersForState);
       if (courseId) {
         const chapterToUpdate = updatedChaptersForState.map((chapter) => ({
           id: chapter.id,
@@ -309,7 +324,7 @@ setItems(updatedChaptersForState);
                             {item.title}
                           </p>
                         </div>
-                        <DeleteChapter chapterId={item.id} courseId={data.id}/>
+                        <DeleteChapter chapterId={item.id} courseId={data.id} />
                       </div>
                       <CollapsibleContent>
                         <div className="p-1">
@@ -343,7 +358,8 @@ setItems(updatedChaptersForState);
                                     <DeleteLesson
                                       chapterId={item.id}
                                       courseId={data.id}
-                                      lessonId={lesson.id} />
+                                      lessonId={lesson.id}
+                                    />
                                   </div>
                                 )}
                               </SortableItem>
