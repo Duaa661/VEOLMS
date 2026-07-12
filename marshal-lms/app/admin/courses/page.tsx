@@ -7,20 +7,7 @@ import {
   AdminCourseCard,
   AdminCourseCardSkelton,
 } from "./_components/AdminCourseCard";
-import { CourseLevel, CourseStatus } from "@prisma/client";
 
-type CourseItem = {
-  id: string;
-  title: string;
-  smallDescription: string;
-  fileKey: string;
-  price: number;
-  duration: number;
-  level: CourseLevel;
-  category: string;
-  slug: string;
-  status: CourseStatus;
-};
 const Page = () => {
   return (
     <>
@@ -44,7 +31,9 @@ const Page = () => {
 export default Page;
 
 async function RenderCourses() {
-  const data: CourseItem[] = await admingetCourses();
+  const data = await admingetCourses();
+
+  type CourseItem = (typeof data)[number];
 
   return (
     <>
