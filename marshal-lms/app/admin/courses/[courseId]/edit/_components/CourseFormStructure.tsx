@@ -45,6 +45,8 @@ import {
   verticalListSortingStrategy,
 } from "@dnd-kit/sortable";
 
+type Chapter = AdminCourseSingularType["chapter"][number];
+type Lesson = Chapter["lessons"][number];
 interface SortableItemProps {
   id: string;
   children: (listeners: DraggableSyntheticListeners) => ReactNode;
@@ -102,20 +104,19 @@ export default function CourseFormStructure({
       order: number;
     }[];
   };
-
-  const [items, setItems] = useState<Item[]>(() =>
-    data.chapter.map((chapter) => ({
-      id: chapter.id,
-      title: chapter.title,
-      order: chapter.position,
-      isOpen: true,
-      lessons: chapter.lessons.map((lesson) => ({
-        id: lesson.id,
-        title: lesson.title,
-        order: lesson.position,
-      })),
+const [items, setItems] = useState<Item[]>(() =>
+  data.chapter.map((chapter: Chapter) => ({
+    id: chapter.id,
+    title: chapter.title,
+    order: chapter.position,
+    isOpen: true,
+    lessons: chapter.lessons.map((lesson: Lesson) => ({
+      id: lesson.id,
+      title: lesson.title,
+      order: lesson.position,
     })),
-  );
+  })),
+);
   function toggleChapter(chapterId: string) {
     setItems((prev) =>
       prev.map((chapter) =>
