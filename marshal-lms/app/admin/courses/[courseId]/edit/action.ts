@@ -7,7 +7,7 @@ import { chapterSchema, ChapterSchemaType, courseSchema, CourseSchemaType, lesso
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 import { revalidatePath } from "next/cache";
-import { Prisma } from "@prisma/client";
+
 const aj = arcjet.withRule(
   detectBot({
     mode: "LIVE",
@@ -166,7 +166,7 @@ export async function createChapter(values:ChapterSchemaType): Promise<ApiRespon
       }
     }
 
-    await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    await prisma.$transaction(async (tx) => {
       const maxpos = await tx.chapter.findFirst({
         where: {
           courseId:result.data.courseId
@@ -183,7 +183,7 @@ export async function createChapter(values:ChapterSchemaType): Promise<ApiRespon
         data: {
           title: result.data.name,
           courseId: result.data.courseId,
-          position:(maxpos?.position ?? 0)+1
+          position:(maxpos?.position ?? 1)+1
         }
       })
     })
@@ -215,7 +215,7 @@ export async function createLesson(values:LessonSchemaType): Promise<ApiResponse
       }
     }
 
-   await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+    await prisma.$transaction(async (tx) => {
       const maxpos = await tx.lesson.findFirst({
         where: {
           chapterId:result.data.chapterId
