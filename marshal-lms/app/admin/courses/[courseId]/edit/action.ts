@@ -6,7 +6,6 @@ import { ApiResponse } from "@/lib/type";
 import { chapterSchema, ChapterSchemaType, courseSchema, CourseSchemaType, lessonSchema } from "@/lib/zodSchemas";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
-import { number, string } from "zod";
 import { revalidatePath } from "next/cache";
 
 const aj = arcjet.withRule(
@@ -64,6 +63,7 @@ export async function editCourse(data:CourseSchemaType,courseId:string): Promise
             message:'Course updated Sucessfully'
         }
     } catch (error) {
+      console.log(error)
         return {
             status: 'success',
             message:'Failed to update Course'
@@ -146,6 +146,7 @@ export async function reorderChapter(
     };
    
   } catch (error) {
+    console.log(error)
     return {
       status: 'error',
       message: "Failed to reoder chapters"
@@ -193,6 +194,7 @@ export async function createChapter(values:ChapterSchemaType): Promise<ApiRespon
       message:"Chapter Created Sucessfully"
     }
   } catch (error) {
+    console.log(error)
     return {
       status: 'error',
       message:"Failed to create Chapter"
@@ -230,7 +232,7 @@ export async function createLesson(values:ChapterSchemaType): Promise<ApiRespons
         data: {
           title: result.data.name,
           description: result.data.description,
-          videoKey: result.data.videoUrl,
+          videoUrl: result.data.videoUrl,
           thumbnailKey: result.data.thumbnailKey,
           chapterId:result.data.chapterId,
           position:(maxpos?.position ?? 0)+1
@@ -244,6 +246,7 @@ export async function createLesson(values:ChapterSchemaType): Promise<ApiRespons
       message:"Lesson Created Sucessfully"
     }
   } catch (error) {
+    console.log(error)
     return {
       status: 'error',
       message:"Failed to create Chapter"
@@ -333,6 +336,7 @@ export async function deleteLesson({
     };
     
   } catch (error) {
+    console.log(error)
     return {
       status: "error",
       message: "Failed to delete lesson.",

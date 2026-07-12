@@ -13,7 +13,7 @@ import type {
   DragEndEvent,
   DraggableSyntheticListeners,
 } from "@dnd-kit/core";
-import { useEffect, useState } from "react";
+import {  useState } from "react";
 import type { ReactNode } from "react";
 import { CSS } from "@dnd-kit/utilities";
 import {
@@ -21,7 +21,6 @@ import {
   ChevronRight,
   FileText,
   GripVertical,
-  Trash2,
 } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -89,46 +88,27 @@ interface CourseFormStructureProps {
 export default function CourseFormStructure({
   data,
 }: CourseFormStructureProps) {
-  const initialItems =
-    data.chapter.map((chapter) => ({
-      id: chapter.id,
-      title: chapter.title,
-      order: chapter.position,
-      isOpen: true,
-      lessons: chapter.lessons.map((lesson) => ({
-        id: lesson.id,
-        title: lesson.title,
-        order: lesson.position,
-      })),
-    })) ?? [];
-  
-  const [items, setItems] = useState(initialItems);
-  useEffect(() => {
-    setItems((prevItems) => {
-      const updatedItems = data.chapter.map((chapter) => ({
-        id: chapter.id,
-        title: chapter.title,
-        order: chapter.position,
-        isOpen:
-          prevItems.find((item) => item.id === chapter.id)?.isOpen ?? true,
-        lessons: chapter.lessons.map((lesson) => ({
-          id: lesson.id,
-          title: lesson.title,
-          order: lesson.position,
-        })),
-      }));
-
-      return updatedItems;
-    });
-  }, [data]);
+  const [items, setItems] = useState(() =>
+  data.chapter.map((chapter) => ({
+    id: chapter.id,
+    title: chapter.title,
+    order: chapter.position,
+    isOpen: true,
+    lessons: chapter.lessons.map((lesson) => ({
+      id: lesson.id,
+      title: lesson.title,
+      order: lesson.position,
+    })),
+  })),
+);
   function toggleChapter(chapterId: string) {
-    setItems(
-      items.map((chapter) =>
-        chapter.id === chapterId
-          ? { ...chapter, isOpen: !chapter.isOpen }
-          : chapter,
-      ),
-    );
+   setItems(prev =>
+  prev.map(chapter =>
+    chapter.id === chapterId
+      ? { ...chapter, isOpen: !chapter.isOpen }
+      : chapter
+  )
+);
   }
 
   const sensors = useSensors(
@@ -182,10 +162,8 @@ export default function CourseFormStructure({
         }),
       );
 
-      const previousItems = items;
-
-      setItems(updatedChaptersForState);
-
+const previousItems = [...items];
+setItems(updatedChaptersForState);
       if (courseId) {
         const chapterToUpdate = updatedChaptersForState.map((chapter) => ({
           id: chapter.id,
@@ -193,7 +171,7 @@ export default function CourseFormStructure({
         }));
         const reorderPromise = () => reorderChapter(courseId, chapterToUpdate);
         toast.promise(reorderPromise(), {
-          loading: "Rordering chapers...",
+          loading: "Rordering chapters...",
           success: (result) => {
             if (result.status === "success") return result.message;
             throw new Error(result.message);

@@ -29,7 +29,7 @@ export default function NotAdminRole() {
         </CardTitle>
 
         <CardDescription className="mx-auto max-w-md text-base leading-7 text-muted-foreground">
-          You don't have permission to access the{" "}
+          You dont have permission to access the{" "}
           <span className="font-semibold text-foreground">
             Admin Dashboard
           </span>

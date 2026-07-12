@@ -5,7 +5,6 @@ import { Trash2 } from "lucide-react";
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -16,7 +15,7 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Button } from "@/components/ui/button";
 import { tryCatch } from "@/hooks/try-catch";
-import { deleteChapter, deleteLesson } from "../action";
+import { deleteChapter} from "../action";
 import { toast } from "sonner";
 
 const DeleteChapter = ({

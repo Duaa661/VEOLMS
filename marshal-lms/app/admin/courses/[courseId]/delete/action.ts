@@ -23,6 +23,7 @@ export async function deleteCourse(
       message: "Course deleted successfully.",
     };
   } catch (error) {
+    console.log(error)
     return {
       status: "error",
       message: "Failed to delete course.",

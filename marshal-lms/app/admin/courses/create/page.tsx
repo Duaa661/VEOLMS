@@ -1,12 +1,14 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import slugify from "slugify";
-import { Controller } from "react-hook-form";
-import { ArrowLeft, FileDiff, Loader2, PlusIcon, Sparkles } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useRouter } from "next/navigation";
+import { useTransition } from "react";
+import { Controller, useForm } from "react-hook-form";
+import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ArrowLeft, Loader2, PlusIcon, Sparkles } from "lucide-react";
+import { toast } from "sonner";
 
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -16,42 +18,44 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ImagePlus } from "lucide-react";
-import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
+
 import { RichTextEditor } from "@/components/rich-text-editor/Editor";
 import { Uploader } from "@/components/file-uploader/uploader";
+
+import { courseSchema } from "@/lib/zodSchemas";
 import { tryCatch } from "@/hooks/try-catch";
-import { CreateCourses } from "./action";
-import { toast } from "sonner";
-import { useRouter } from "next/navigation";
 import { useConfetti } from "@/hooks/use-confetti";
-import { z } from "zod";
+
+import { CreateCourses } from "./action";
+
 export default function CourseCreationPage() {
-  const [thumbnailPreview, setThumbnailPreview] = useState<string | null>(null);
-  const [Pending, startTransition] = useTransition();
+  const [pending, startTransition] = useTransition();
+
   const router = useRouter();
-  const {triggerConfetti}=useConfetti()
+  const { triggerConfetti } = useConfetti();
+
   const form = useForm<
   z.input<typeof courseSchema>,
-  any,
+  unknown,
   z.output<typeof courseSchema>
 >({
   resolver: zodResolver(courseSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      fileKey: "",
-      price: 0,
-      duration: 0,
-      level: "Beginner",
-      category: "",
-      status: "Draft",
-      slug: "",
-      smallDescription: "",
-    },
-  });
+  mode: "onChange",
+  defaultValues: {
+    title: "",
+    slug: "",
+    smallDescription: "",
+    description: "",
+    fileKey: "",
+    category: "",
+    price: 0,
+    duration: 1,
+    level: "Beginner",
+    status: "Draft",
+  },
+});
 
- function onSubmit(values: z.output<typeof courseSchema>) {
+  function onSubmit(values: z.output<typeof courseSchema>) {
     startTransition(async () => {
       const { data: result, error } = await tryCatch(CreateCourses(values));
 
@@ -64,14 +68,18 @@ export default function CourseCreationPage() {
 
       if (result.status === "success") {
         toast.success(result.message);
-        triggerConfetti()
+
+        triggerConfetti();
+
         form.reset();
+
         router.push("/admin/courses");
       } else {
         toast.error(result.message);
       }
     });
   }
+
   return (
     <>
       <div className="flex items-center gap-4">
@@ -91,10 +99,12 @@ export default function CourseCreationPage() {
       <Card>
         <CardHeader>
           <CardTitle>Basic Information</CardTitle>
+
           <CardDescription>
             Provide basic information about the course
           </CardDescription>
         </CardHeader>
+
         <CardContent>
           <form
             onSubmit={form.handleSubmit(onSubmit)}
@@ -135,7 +145,7 @@ export default function CourseCreationPage() {
                   <Button
                     type="button"
                     variant="secondary"
-                    className="w-full sm:w-auto shrink-0"
+                    className="w-full shrink-0 sm:w-auto"
                     onClick={() => {
                       const title = form.getValues("title");
 
@@ -153,7 +163,7 @@ export default function CourseCreationPage() {
                       });
                     }}
                   >
-                    <Sparkles className="mr-2 h-4 w-4" />
+                    <Sparkles className="mr-2 size-4" />
                     Generate
                   </Button>
                 </div>
@@ -188,17 +198,19 @@ export default function CourseCreationPage() {
               <label htmlFor="description" className="text-sm font-medium">
                 Course Description
               </label>
+
               <Controller
                 control={form.control}
                 name="description"
                 render={({ field }) => <RichTextEditor field={field} />}
               />
+
               <p className="text-sm text-destructive">
                 {form.formState.errors.description?.message}
               </p>
             </div>
 
-            {/* Course Thumbnail */}
+            {/* Thumbnail */}
             <div className="space-y-2">
               <label htmlFor="fileKey" className="text-sm font-medium">
                 Course Thumbnail
@@ -208,7 +220,11 @@ export default function CourseCreationPage() {
                 control={form.control}
                 name="fileKey"
                 render={({ field }) => (
-                  <Uploader onChange={field.onChange} value={field.value} filetypeAccepted="image" />
+                  <Uploader
+                    onChange={field.onChange}
+                    value={field.value}
+                    filetypeAccepted="image"
+                  />
                 )}
               />
 
@@ -234,6 +250,7 @@ export default function CourseCreationPage() {
                   {form.formState.errors.category?.message}
                 </p>
               </div>
+
               <div className="space-y-2">
                 <label htmlFor="level" className="text-sm font-medium">
                   Course Level
@@ -242,26 +259,12 @@ export default function CourseCreationPage() {
                 <select
                   id="level"
                   {...form.register("level")}
-                  className="
-      w-full
-      rounded-md
-      border
-      border-input
-      bg-background
-      text-foreground
-      px-3
-      py-2
-      outline-none
-      transition-colors
-      focus:ring-2
-      focus:ring-primary
-      focus:border-primary
-      dark:bg-background
-      dark:text-foreground
-    "
+                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary"
                 >
                   <option value="Beginner">Beginner</option>
+
                   <option value="Intermediate">Intermediate</option>
+
                   <option value="Advanced">Advanced</option>
                 </select>
 
@@ -323,26 +326,12 @@ export default function CourseCreationPage() {
               <select
                 id="status"
                 {...form.register("status")}
-                className="
-      w-full
-      rounded-md
-      border
-      border-input
-      bg-background
-      text-foreground
-      px-3
-      py-2
-      transition-colors
-      outline-none
-      focus:border-primary
-      focus:ring-2
-      focus:ring-primary
-      disabled:cursor-not-allowed
-      disabled:opacity-50
-    "
+                className="w-full rounded-md border border-input bg-background px-3 py-2 text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-50"
               >
                 <option value="Draft">Draft</option>
+
                 <option value="Published">Published</option>
+
                 <option value="Archived">Archived</option>
               </select>
 
@@ -350,22 +339,24 @@ export default function CourseCreationPage() {
                 {form.formState.errors.status?.message}
               </p>
             </div>
+
             {/* Submit Button */}
             <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
               <Button
                 type="submit"
-                disabled={Pending}
+                disabled={pending}
                 size="lg"
                 className="w-full sm:w-auto"
               >
-                {Pending ? (
+                {pending ? (
                   <>
                     Creating...
-                    <Loader2 className="animate-spin" />
+                    <Loader2 className="ml-2 size-4 animate-spin" />
                   </>
                 ) : (
                   <>
-                    Create Course <PlusIcon className="ml-1" size={16} />
+                    Create Course
+                    <PlusIcon className="ml-1" size={16} />
                   </>
                 )}
               </Button>

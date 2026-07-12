@@ -4,8 +4,6 @@ import { NextResponse } from "next/server";
 import { s3 } from "@/lib/s3Client"; // your configured S3 client
 import { env } from "@/lib/env";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
 import { requireAdmin } from "@/app/data/admin/require-user";
 
 const aj = arcjet.withRule(
@@ -56,7 +54,7 @@ export async function DELETE(request: Request) {
       message: "File deleted successfully.",
     });
   } catch (error) {
-
+     console.log(error)
     return NextResponse.json(
       {
         success: false,

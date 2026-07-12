@@ -1,18 +1,34 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
+import { EditorContent, useEditor } from "@tiptap/react";
+import type { JSONContent } from "@tiptap/core";
 import StarterKit from "@tiptap/starter-kit";
 import TextAlign from "@tiptap/extension-text-align";
+import type {
+  ControllerRenderProps,
+  FieldValues,
+  Path,
+} from "react-hook-form";
+
 import Menubar from "./Menubar";
 
-export function RichTextEditor({ field }: { field: any }) {
-  let initialContent: any = "<p>Hello world</p>";
+interface RichTextEditorProps<
+  TFieldValues extends FieldValues,
+  TName extends Path<TFieldValues>,
+> {
+  field: ControllerRenderProps<TFieldValues, TName>;
+}
 
-  if (field.value) {
+export function RichTextEditor<
+  TFieldValues extends FieldValues,
+  TName extends Path<TFieldValues>,
+>({ field }: RichTextEditorProps<TFieldValues, TName>) {
+  let initialContent: string | JSONContent = "<p>Hello world</p>";
+
+  if (typeof field.value === "string" && field.value.length > 0) {
     try {
-      initialContent = JSON.parse(field.value);
+      initialContent = JSON.parse(field.value) as JSONContent;
     } catch {
-      // If it's plain text instead of JSON, render it as HTML
       initialContent = `<p>${field.value}</p>`;
     }
   }

@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { RichTextEditor } from "@/components/rich-text-editor/Editor";
 import { Uploader } from "@/components/file-uploader/uploader";
 
-import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
+import { courseSchema } from "@/lib/zodSchemas";
 import { tryCatch } from "@/hooks/try-catch";
 import { toast } from "sonner";
 import { z } from "zod";
@@ -25,10 +25,9 @@ interface EditCourseFormProps {
 export default function EditCourseForm({ data }: EditCourseFormProps) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-
-  const form = useForm<
+const form = useForm<
   z.input<typeof courseSchema>,
-  any,
+  unknown,
   z.output<typeof courseSchema>
 >({
   resolver: zodResolver(courseSchema),

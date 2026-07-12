@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { Loader2, X } from "lucide-react";
 import { toast } from "sonner";
@@ -31,25 +31,16 @@ interface isAppProps {
 export function Uploader({ onChange, value, filetypeAccepted }: isAppProps) {
   const fileUrl = value ? constructObjectUrl(value) : "";
 
-  const initialState = useMemo<UploadState>(
-    () => ({
-      file: null,
-      objectUrl: fileUrl,
-      key: value,
-      uploading: false,
-      progress: 0,
-      error: false,
-      isDeleting: false,
-    }),
-    [fileUrl, value],
-  );
-
-  const [state, setState] = useState<UploadState>(initialState);
-
-  useEffect(() => {
-    setState(initialState);
-  }, [initialState]);
-
+const [state, setState] = useState<UploadState>(() => ({
+  file: null,
+  objectUrl: fileUrl,
+  key: value,
+  uploading: false,
+  progress: 0,
+  error: false,
+  isDeleting: false,
+}));
+  
   useEffect(() => {
     return () => {
       if (state.objectUrl && !state.objectUrl.startsWith("http")) {

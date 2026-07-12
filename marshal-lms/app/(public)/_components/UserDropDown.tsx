@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import {
   BookOpen,
   Home,
@@ -19,11 +18,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { authClient } from "@/lib/auth-client";
-import { toast } from "sonner";
 import { useSignOut } from "@/hooks/user-signout";
 
 export function UserDropdown() {
-  const router = useRouter();
   const { data: session } = authClient.useSession();
    const signout=useSignOut()
 
