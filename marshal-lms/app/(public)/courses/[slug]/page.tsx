@@ -202,7 +202,7 @@ const SlugPage = async ({ params }: { params: Params }) => {
         {/* What you will get */}
         <div className="space-y-4">
           <h4 className="font-semibold">
-            What you'll get
+            What you will get
           </h4>
 
           <div className="space-y-3">
