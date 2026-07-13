@@ -6,7 +6,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 import { env } from "@/lib/env";
 import { s3 } from "@/lib/s3Client";
-import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
+import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { requireAdmin } from "@/app/data/admin/require-user";
 
 const fileUploadSchema = z.object({
@@ -23,11 +23,6 @@ const fileUploadSchema = z.object({
 });
 // Manage the traffic allow the user only 5 request in one minute
 const aj = arcjet.withRule(
-  detectBot({
-    mode: "LIVE",
-    allow:[]
-  })
-).withRule(
   fixedWindow({
     mode: "LIVE",
     window: "1m",

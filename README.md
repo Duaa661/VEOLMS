@@ -155,6 +155,7 @@ screenshots/
 ├── analytics.png
 ├── checkout.png
 ├── student-dashboard.png
+├── student-enroll.png
 ├── progress-tracking.png
 └── deployment.png
 ```
@@ -248,6 +249,12 @@ screenshots/
 ## Student Dashboard
 
 ![Dashboard](./screenshots/student-dashboard.png)
+
+---
+
+## Student Enroll Courses
+
+![Dashboard](./screenshots/student-enroll.png)
 
 ---
 

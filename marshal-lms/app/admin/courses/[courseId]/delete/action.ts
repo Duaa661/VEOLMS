@@ -4,12 +4,43 @@ import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/type";
 import { requireAdmin } from "@/app/data/admin/require-user";
+import arcjet, {fixedWindow } from "@/lib/arcjet";
+import { request } from "@arcjet/next";
+
+const aj = arcjet.withRule(
+       fixedWindow({
+      mode: "LIVE",
+      window: "1m",
+      max: 5,
+    })
+  );
 
 export async function deleteCourse(
   courseId: string
 ): Promise<ApiResponse> {
-  await requireAdmin();
+  const session = await requireAdmin();
+
   try {
+    const req = await request();
+      //  Rate limiting only some request allow
+    const decision = await aj.protect(req, {
+      fingerprint: session.user.id,
+    });
+
+    if (decision.isDenied()) {
+      if (decision.reason.isRateLimit()) {
+        return {
+          status: "error",
+          message: "Too many requests. Please try again later.",
+        };
+      }
+
+      return {
+        status: "error",
+        message: "Looks like you are a malicious user.",
+      };
+    }
+
     await prisma.course.delete({
       where: {
         id: courseId,
@@ -23,7 +54,8 @@ export async function deleteCourse(
       message: "Course deleted successfully.",
     };
   } catch (error) {
-    console.log(error)
+    console.error(error);
+
     return {
       status: "error",
       message: "Failed to delete course.",

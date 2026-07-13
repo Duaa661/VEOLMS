@@ -21,6 +21,9 @@ model User {
   courses       Course[]
   accounts      Account[]
   sessions      Session[]
+  enrollment    Enrollment[]
+    // Stripe
+  stripeCustomerId String? @unique
 
   @@map("user")
 }
@@ -90,6 +93,7 @@ model Course {
   smallDescription String
   chapter          Chapter[]
   user             User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enrollment       Enrollment[]
 }
 
 model Chapter {
@@ -126,4 +130,25 @@ enum CourseStatus {
   Draft
   Published
   Archived
+}
+
+
+// stripe model
+
+model Enrollment {
+  id String @id @default(uuid())
+  userId   String
+  courseId String
+  amount Int
+  currency String @default("usd")
+  status EnrollmentStatus @default(Pending)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  course Course @relation(fields: [courseId], references: [id], onDelete: Cascade)
+}
+enum EnrollmentStatus{
+  Pending
+  Active
+  Cancelled
 }
