@@ -1,7 +1,6 @@
 import { getSingleCourse } from "@/app/data/course/get-course";
 import RenderDescription from "@/components/rich-text-editor/RenderDescription";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
   Collapsible,
@@ -21,6 +20,9 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import Image from "next/image";
+import { checkIfCourseBought } from "@/app/data/user/user-is-enrolled";
+import Link from "next/link";
+import { EnrollmentButton } from "./_components/EnrollmentButton";
 
 type Params = Promise<{ slug: string }>;
 
@@ -29,7 +31,7 @@ const SlugPage = async ({ params }: { params: Params }) => {
 
   const course = await getSingleCourse(slug);
   const thumbnailKey = constructObjectUrl(course.fileKey);
-
+  const isEnrolled=await  checkIfCourseBought(course.id)
   const totalLessons = course.chapter.reduce(
     (total, chapter) => total + chapter.lessons.length,
     0,
@@ -172,178 +174,171 @@ const SlugPage = async ({ params }: { params: Params }) => {
 
       {/* Price Section */}
       <div className="order-2 lg:col-span-1">
-  <div className="sticky top-20 space-y-6">
-    {/* Price Card */}
-    <Card>
-      <CardContent className="space-y-6 p-6">
-        {/* Price */}
-        <div>
-          <p className="text-sm text-muted-foreground">
-            One-time Purchase
-          </p>
+        <div className="sticky top-20 space-y-6">
+          {/* Price Card */}
+          <Card>
+            <CardContent className="space-y-6 p-6">
+              {/* Price */}
+              <div>
+                <p className="text-sm text-muted-foreground">
+                  One-time Purchase
+                </p>
 
-          <div className="mt-2 flex items-end gap-2">
-            <h2 className="text-4xl font-bold">
-              ₹{course.price}
-            </h2>
+                <div className="mt-2 flex items-end gap-2">
+                  <h2 className="text-4xl font-bold">₹{course.price}</h2>
 
-            <span className="pb-1 text-sm text-muted-foreground">
-              INR
-            </span>
-          </div>
-        </div>
+                  <span className="pb-1 text-sm text-muted-foreground">
+                    INR
+                  </span>
+                </div>
+              </div>
+              {
+                isEnrolled ? (
+                  <Link href="/dashboard">Watch Course</Link>
+                ) : (
+                    <EnrollmentButton courseId={ course.id} />
+                )
+              }
 
-        <Button className="h-11 w-full text-base">
-          Enroll Now
-        </Button>
+              <Separator />
 
-        <Separator />
+              {/* What you will get */}
+              <div className="space-y-4">
+                <h4 className="font-semibold">What you will get</h4>
 
-        {/* What you will get */}
-        <div className="space-y-4">
-          <h4 className="font-semibold">
-            What you will get
-          </h4>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <Clock3 className="size-4" />
+                    </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <Clock3 className="size-4" />
+                    <span>{course.duration} Hours of Content</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <BookOpen className="size-4" />
+                    </div>
+
+                    <span>{course.category}</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
+                      <GraduationCap className="size-4" />
+                    </div>
+
+                    <span>{course.level}</span>
+                  </div>
+                </div>
               </div>
 
-              <span>{course.duration} Hours of Content</span>
-            </div>
+              <Separator />
 
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <BookOpen className="size-4" />
+              {/* Course Includes */}
+              <div className="space-y-4">
+                <h4 className="font-semibold">This course includes</h4>
+
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="size-4 text-primary" />
+                    <span>Lifetime Access</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="size-4 text-primary" />
+                    <span>{course.chapter.length} Chapters</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="size-4 text-primary" />
+                    <span>{totalLessons} Lessons</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="size-4 text-primary" />
+                    <span>{course.duration} Hours of Content</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="size-4 text-primary" />
+                    <span>Certificate of Completion</span>
+                  </div>
+
+                  <div className="flex items-center gap-3">
+                    <CheckCircle2 className="size-4 text-primary" />
+                    <span>Access on Mobile & Desktop</span>
+                  </div>
+                </div>
               </div>
 
-              <span>{course.category}</span>
-            </div>
+              <Separator />
 
-            <div className="flex items-center gap-3">
-              <div className="flex size-8 items-center justify-center rounded-full bg-primary/10 text-primary">
-                <GraduationCap className="size-4" />
+              {/* Secure Payment */}
+              <div className="rounded-lg border bg-muted/40 p-4">
+                <div className="flex items-start gap-3">
+                  <ShieldCheck className="mt-0.5 size-5 text-green-600" />
+
+                  <div>
+                    <p className="font-medium">Secure Payment</p>
+
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Your payment is protected with secure encryption.
+                    </p>
+                  </div>
+                </div>
+
+                <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
+                  <CreditCard className="size-4" />
+                  <span>Supports UPI, Cards & Net Banking</span>
+                </div>
               </div>
+            </CardContent>
+          </Card>
 
-              <span>{course.level}</span>
-            </div>
-          </div>
+          {/* Course Information */}
+          <Card>
+            <CardContent className="space-y-6 p-6">
+              <h3 className="text-xl font-semibold">Course Information</h3>
+
+              <div className="space-y-4">
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Level</span>
+                  <span className="font-medium">{course.level}</span>
+                </div>
+
+                <Separator />
+
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Category</span>
+                  <span className="font-medium">{course.category}</span>
+                </div>
+
+                <Separator />
+
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Duration</span>
+                  <span className="font-medium">{course.duration} Hours</span>
+                </div>
+
+                <Separator />
+
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Chapters</span>
+                  <span className="font-medium">{course.chapter.length}</span>
+                </div>
+
+                <Separator />
+
+                <div className="flex items-center justify-between">
+                  <span className="text-muted-foreground">Lessons</span>
+                  <span className="font-medium">{totalLessons}</span>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
-
-        <Separator />
-
-        {/* Course Includes */}
-        <div className="space-y-4">
-          <h4 className="font-semibold">
-            This course includes
-          </h4>
-
-          <div className="space-y-3 text-sm">
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="size-4 text-primary" />
-              <span>Lifetime Access</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="size-4 text-primary" />
-              <span>{course.chapter.length} Chapters</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="size-4 text-primary" />
-              <span>{totalLessons} Lessons</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="size-4 text-primary" />
-              <span>{course.duration} Hours of Content</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="size-4 text-primary" />
-              <span>Certificate of Completion</span>
-            </div>
-
-            <div className="flex items-center gap-3">
-              <CheckCircle2 className="size-4 text-primary" />
-              <span>Access on Mobile & Desktop</span>
-            </div>
-          </div>
-        </div>
-
-        <Separator />
-
-        {/* Secure Payment */}
-        <div className="rounded-lg border bg-muted/40 p-4">
-          <div className="flex items-start gap-3">
-            <ShieldCheck className="mt-0.5 size-5 text-green-600" />
-
-            <div>
-              <p className="font-medium">
-                Secure Payment
-              </p>
-
-              <p className="mt-1 text-sm text-muted-foreground">
-                Your payment is protected with secure encryption.
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-4 flex items-center gap-2 text-sm text-muted-foreground">
-            <CreditCard className="size-4" />
-            <span>Supports UPI, Cards & Net Banking</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-
-    {/* Course Information */}
-    <Card>
-      <CardContent className="space-y-6 p-6">
-        <h3 className="text-xl font-semibold">
-          Course Information
-        </h3>
-
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Level</span>
-            <span className="font-medium">{course.level}</span>
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Category</span>
-            <span className="font-medium">{course.category}</span>
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Duration</span>
-            <span className="font-medium">{course.duration} Hours</span>
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Chapters</span>
-            <span className="font-medium">{course.chapter.length}</span>
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <span className="text-muted-foreground">Lessons</span>
-            <span className="font-medium">{totalLessons}</span>
-          </div>
-        </div>
-      </CardContent>
-    </Card>
-  </div>
-</div>
+      </div>
     </div>
   );
 };
