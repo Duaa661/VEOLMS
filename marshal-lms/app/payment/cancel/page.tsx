@@ -15,7 +15,7 @@ const PaymentCancelled = () => {
 
             <p className="text-muted-foreground">
               Your payment was cancelled and no amount has been charged.
-              You can return to the course page and try again whenever you're
+              You can return to the course page and try again whenever you are
               ready.
             </p>
           </div>
