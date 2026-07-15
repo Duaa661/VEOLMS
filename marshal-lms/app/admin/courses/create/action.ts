@@ -1,43 +1,47 @@
 "use server";
 
 import { requireAdmin } from "@/app/data/admin/require-user";
-import arcjet, {  fixedWindow } from "@/lib/arcjet";
+import arcjet, { fixedWindow } from "@/lib/arcjet";
 import { prisma } from "@/lib/db";
+import { stripe } from "@/lib/stripe";
 import { ApiResponse } from "@/lib/type";
 import { courseSchema, CourseSchemaType } from "@/lib/zodSchemas";
 import { request } from "@arcjet/next";
-
 
 const aj = arcjet.withRule(
   fixedWindow({
     mode: "LIVE",
     window: "1m",
-    max:5
+    max: 5,
   })
-)
+);
+
 export async function CreateCourses(
   data: CourseSchemaType
 ): Promise<ApiResponse> {
   const session = await requireAdmin();
+
   try {
-        const req=await request()
-        const decision = await aj.protect(req, {
-          fingerprint: session?.user.id as string
-        })
+    const req = await request();
+
+    const decision = await aj.protect(req, {
+      fingerprint: session?.user.id as string,
+    });
+
     if (decision.isDenied()) {
-      if (!decision.reason.isRateLimit()) {
+      if (decision.reason.isRateLimit()) {
         return {
           status: "error",
-          message: "Looks like you are a malicous user"
-        }
-      }
-      else {
+          message: "Too many requests. Please try again later.",
+        };
+      } else {
         return {
           status: "error",
-          message: "You are a bot! if this is a mistake correct our support"
-        }
+          message: "Looks like you are a malicious user.",
+        };
       }
-        }
+    }
+
     if (!session) {
       return {
         status: "error",
@@ -55,10 +59,20 @@ export async function CreateCourses(
       };
     }
 
+    const product = await stripe.products.create({
+      name: validation.data.title,
+      description: validation.data.smallDescription,
+      default_price_data: {
+        currency: "inr",
+        unit_amount: validation.data.price * 100,
+      },
+    });
+
     await prisma.course.create({
       data: {
         ...validation.data,
         userId: session.user.id,
+        stripePriceId: product.default_price as string,
       },
     });
 

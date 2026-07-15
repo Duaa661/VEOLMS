@@ -1,5 +1,9 @@
 import type { CSSProperties, ReactNode } from "react";
 
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
+import { auth } from "@/lib/auth";
 import { AppSidebar } from "@/components/sidebar/app-sidebar";
 import { SiteHeader } from "@/components/sidebar/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
@@ -8,7 +12,17 @@ type AdminLayoutProps = {
   children: ReactNode;
 };
 
-export default function AdminLayout({ children }: AdminLayoutProps) {
+export default async function AdminLayout({
+  children,
+}: AdminLayoutProps) {
+  const session = await auth.api.getSession({
+    headers: await headers(),
+  });
+
+  if (!session) {
+    redirect("/login");
+  }
+
   return (
     <SidebarProvider
       style={
