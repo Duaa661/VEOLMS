@@ -79,7 +79,7 @@ export function UserDropdown() {
         <DropdownMenuItem asChild>
           <Link href="/admin" className="cursor-pointer">
             <LayoutDashboard className="mr-2 h-4 w-4" />
-            Dashboard
+            Admin Dashboard
           </Link>
         </DropdownMenuItem>
 
