@@ -15,12 +15,6 @@
 
 VeoLMS is a complete **Learning Management System** that enables instructors to create and manage online courses while allowing students to purchase courses, watch lessons, and track their learning progress.
 
-This project was built from scratch in **two parts (24+ hours)** and demonstrates how to build a scalable, production-ready LMS using the latest web technologies.
-
-### 🎬 Part 1
-
-The first part focuses on building the application's foundation.
-
 It covers:
 
 - Project setup
@@ -36,15 +30,6 @@ It covers:
 - Protected routes
 - Course structure
 - Drag & Drop
-
----
-
-### 🎬 Part 2
-
-The second part completes the LMS by implementing advanced features.
-
-It covers:
-
 - Completing Drag & Drop
 - Course editing
 - Public course pages
