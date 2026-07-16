@@ -2,11 +2,14 @@ import { ChartAreaInteractive } from "@/components/sidebar/chart-area-interactiv
 import { SectionCards } from "@/components/sidebar/section-cards";
 import { adminGetDashboardStats } from "../data/admin/admin-get-dashboard-stats";
 import adminGetEnrollmentStats from "../data/admin/admin-get-enrollement-stats";
+import { adminGetRecentCourses } from "../data/admin/admin-get-recent-courses";
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
-import { adminGetRecentCourses } from "../data/admin/admin-get-recent-courses";
 import EmptyState from "@/components/general/EmptyState";
-import { AdminCourseCard, AdminCourseCardSkelton } from "./courses/_components/AdminCourseCard";
+import {
+  AdminCourseCard,
+  AdminCourseCardSkelton,
+} from "./courses/_components/AdminCourseCard";
 import { Suspense } from "react";
 
 export default async function AdminIndexPage() {
@@ -45,7 +48,7 @@ export default async function AdminIndexPage() {
 }
 
 
-export async function RenderRecentCourses() {
+async function RenderRecentCourses() {
   const data = await adminGetRecentCourses();
 
   if (data.length === 0) {
@@ -75,8 +78,10 @@ export async function RenderRecentCourses() {
 function RenderRecentCourseSkeltonLayout() {
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-      {Array.from({ length: 2 }).map((_ , index) => (
-        <AdminCourseCardSkelton key={index}/>
+      {Array.from({ length: 2 }).map((_, index) => (
+        <AdminCourseCardSkelton
+          key={index}
+        />
       ))}
     </div>
   );
