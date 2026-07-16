@@ -3,7 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/type";
-import { requireAdmin } from "@/app/data/admin/require-user";
+import { requireAdmin } from "@/app/data/admin/require-admin";
 import arcjet, {fixedWindow } from "@/lib/arcjet";
 import { request } from "@arcjet/next";
 

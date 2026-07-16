@@ -1,6 +1,6 @@
 "use server";
 
-import { requireAdmin } from "@/app/data/admin/require-user";
+import { requireAdmin } from "@/app/data/admin/require-admin";
 import { prisma } from "@/lib/db";
 import { ApiResponse } from "@/lib/type";
 import {
