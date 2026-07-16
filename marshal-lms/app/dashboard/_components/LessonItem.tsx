@@ -63,8 +63,8 @@ const LessonItem = ({ lesson, slug, isActive }: isAppProps) => {
           <p
             className={cn(
               "truncate text-xs font-medium",
-              completed && "text-green-800 dark:text-green-200",
-              isActive && !completed && "text-primary"
+              completed ? "text-green-800 dark:text-green-200":
+              isActive ? "text-primary font-semibold":"text-foreground"
             )}
           >
             {lesson.position}. {lesson.title}
@@ -74,7 +74,11 @@ const LessonItem = ({ lesson, slug, isActive }: isAppProps) => {
             <p className="text-[10px] text-green-700 dark:text-green-300">
               Completed
             </p>
-          )}
+                  )}
+                  {
+                      isActive && !completed &&
+                      <p className="text-[10px] text-primary font-medium">Currently Watching</p>
+                  }
         </div>
       </div>
     </Link>
