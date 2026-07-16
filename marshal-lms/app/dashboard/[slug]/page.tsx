@@ -9,12 +9,9 @@ interface Props {
 }
 
 export default async function CoursesSlugRoute({ params }: Props) {
-  const { slug, lessonId } = await params;
+  const { lessonId } = await params;
 
-  const data = await getLessonContent({
-    slug,
-    lessonId,
-  });
+  const data = await getLessonContent(lessonId);
 
   return (
     <div className="flex h-full flex-col">
