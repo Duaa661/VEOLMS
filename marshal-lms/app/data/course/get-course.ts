@@ -43,3 +43,5 @@ export async function getSingleCourse(slug: string) {
     }
     return course
 }
+
+
