@@ -17,18 +17,12 @@ import {
   type ChartConfig,
 } from "@/components/ui/chart";
 
-export const description = "Enrollment chart";
-
-// Dummy data
-const chartData = [
-  { date: "2026-06-16", enrollments: 12 },
-  { date: "2026-06-17", enrollments: 18 },
-  { date: "2026-06-18", enrollments: 15 },
-  { date: "2026-06-19", enrollments: 22 },
-  { date: "2026-06-20", enrollments: 28 },
-  { date: "2026-06-21", enrollments: 19 },
-  { date: "2026-06-22", enrollments: 30 },
-];
+type EnrollmentChartProps = {
+  data: {
+    date: string;
+    enrollments: number;
+  }[];
+};
 
 const chartConfig = {
   enrollments: {
@@ -37,8 +31,10 @@ const chartConfig = {
   },
 } satisfies ChartConfig;
 
-export function ChartAreaInteractive() {
-  const totalEnrollments = chartData.reduce(
+export function ChartAreaInteractive({
+  data,
+}: EnrollmentChartProps) {
+  const totalEnrollments = data.reduce(
     (sum, item) => sum + item.enrollments,
     0
   );
@@ -47,8 +43,9 @@ export function ChartAreaInteractive() {
     <Card className="@container/card">
       <CardHeader>
         <CardTitle>Total Enrollments</CardTitle>
+
         <CardDescription>
-          Last 7 days: {totalEnrollments} enrollments
+          Last 30 days: {totalEnrollments} enrollments
         </CardDescription>
       </CardHeader>
 
@@ -58,8 +55,11 @@ export function ChartAreaInteractive() {
           className="h-[250px] w-full"
         >
           <BarChart
-            data={chartData}
-            margin={{ left: 12, right: 12 }}
+            data={data}
+            margin={{
+              left: 12,
+              right: 12,
+            }}
           >
             <CartesianGrid vertical={false} />
 
@@ -68,6 +68,7 @@ export function ChartAreaInteractive() {
               tickLine={false}
               axisLine={false}
               tickMargin={8}
+              interval="preserveStartEnd"
               tickFormatter={(value) =>
                 new Date(value).toLocaleDateString("en-US", {
                   month: "short",
@@ -78,7 +79,18 @@ export function ChartAreaInteractive() {
 
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent />}
+              content={
+                <ChartTooltipContent
+                  className="w-[150px]"
+                  labelFormatter={(value) =>
+                    new Date(value).toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                      year: "numeric",
+                    })
+                  }
+                />
+              }
             />
 
             <Bar

@@ -1,5 +1,6 @@
+import "server-only"
 import { prisma } from "@/lib/db";
-import { requireAdmin } from "./require-user";
+import { requireAdmin } from "./require-admin";
 
 export async function adminGetDashboardStats() {
   await requireAdmin();
