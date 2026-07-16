@@ -36,7 +36,6 @@ export async function POST(req: Request) {
         const courseId = session.metadata?.courseId;
         const enrollmentId = session.metadata?.enrollmentId;
         const customerId = session.customer as string;
-
         if (!userId || !courseId || !enrollmentId || !customerId) {
           return new Response("Missing metadata", {
             status: 400,
@@ -67,6 +66,8 @@ export async function POST(req: Request) {
 
         break;
       }
+       
+        console.log("checkout.session.completed");
 
       default:
         console.log(`Unhandled event type: ${event.type}`);
