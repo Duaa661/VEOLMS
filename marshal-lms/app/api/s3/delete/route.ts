@@ -4,7 +4,7 @@ import { NextResponse } from "next/server";
 import { s3 } from "@/lib/s3Client"; // your configured S3 client
 import { env } from "@/lib/env";
 import arcjet, { detectBot, fixedWindow } from "@/lib/arcjet";
-import { requireAdmin } from "@/app/data/admin/require-user";
+import { requireAdmin } from "@/app/data/admin/require-admin";
 
 const aj = arcjet.withRule(
   detectBot({

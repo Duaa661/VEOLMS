@@ -7,7 +7,7 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { env } from "@/lib/env";
 import { s3 } from "@/lib/s3Client";
 import arcjet, { fixedWindow } from "@/lib/arcjet";
-import { requireAdmin } from "@/app/data/admin/require-user";
+import { requireAdmin } from "@/app/data/admin/require-admin";
 
 const fileUploadSchema = z.object({
   filename: z.string().min(1, {
