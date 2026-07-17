@@ -12,10 +12,10 @@ interface isAppProps {
   };
   slug: string;
   isActive?: boolean;
+  completed: boolean;
 }
 
-const LessonItem = ({ lesson, slug, isActive }: isAppProps) => {
-  const completed = false;
+const LessonItem = ({ lesson, slug, isActive,completed }: isAppProps) => {
 
   return (
     <Link

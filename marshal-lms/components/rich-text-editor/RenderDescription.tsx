@@ -6,11 +6,27 @@ import TextAlign from "@tiptap/extension-text-align";
 import { generateHTML, type JSONContent } from "@tiptap/react";
 import parse from "html-react-parser";
 
-const RenderDescription = ({ json }: { json: JSONContent | null }) => {
+interface Props {
+  json: JSONContent | string | null;
+}
+
+const RenderDescription = ({ json }: Props) => {
   const output = useMemo(() => {
     if (!json) return "";
 
-    return generateHTML(json, [
+    let content: JSONContent;
+
+    try {
+      content =
+        typeof json === "string"
+          ? JSON.parse(json)
+          : json;
+    } catch (error) {
+      console.log("Invalid JSON description:", error);
+      return "";
+    }
+
+    return generateHTML(content, [
       StarterKit,
       TextAlign.configure({
         types: ["heading", "paragraph"],
