@@ -13,20 +13,44 @@ export default async function getEnrolledCourses() {
       course: {
         select: {
           id: true,
-          smallDescription: true,
           title: true,
+          smallDescription: true,
           fileKey: true,
           price: true,
           level: true,
           slug: true,
           duration: true,
           category: true,
+
           chapter: {
+            orderBy: {
+              position: "asc",
+            },
             select: {
               id: true,
+              title: true,
+              position: true,
+
               lessons: {
+                orderBy: {
+                  position: "asc",
+                },
                 select: {
                   id: true,
+                  title: true,
+                  description: true,
+                  position: true,
+
+                  lessonProgress: {
+                    where: {
+                      userId: user.id,
+                    },
+                    select: {
+                      id: true,
+                      completed: true,
+                      lessonId: true,
+                    },
+                  },
                 },
               },
             },
@@ -38,3 +62,6 @@ export default async function getEnrolledCourses() {
 
   return data;
 }
+
+export type EnrolledCourseType =
+  Awaited<ReturnType<typeof getEnrolledCourses>>[0];
