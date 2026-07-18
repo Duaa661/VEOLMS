@@ -52,7 +52,7 @@ const {
         <div className="space-y-2">
           <div className="flex items-center justify-between text-sm">
             <span>Progress</span>
-            <span className="font-medium">{progressPercentage.toFixed(2)}%</span>
+            <span className="font-medium">{Math.round(progressPercentage)}%</span>
           </div>
 
           <Progress value={progressPercentage} />
